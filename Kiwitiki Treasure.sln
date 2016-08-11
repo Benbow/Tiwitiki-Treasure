@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwitiki Treasure.CSharp.Plugins", "Kiwitiki Treasure.CSharp.Plugins.csproj", "{480FECF4-0307-8607-9D8F-65760B9D0BE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwitiki Treasure.CSharp", "Kiwitiki Treasure.CSharp.csproj", "{745F0BED-054C-4AB9-2620-3713378319F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwitiki Treasure.CSharp.Editor", "Kiwitiki Treasure.CSharp.Editor.csproj", "{AB413424-593F-ECFD-9238-3676B6712439}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{480FECF4-0307-8607-9D8F-65760B9D0BE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{480FECF4-0307-8607-9D8F-65760B9D0BE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{480FECF4-0307-8607-9D8F-65760B9D0BE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{480FECF4-0307-8607-9D8F-65760B9D0BE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{745F0BED-054C-4AB9-2620-3713378319F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{745F0BED-054C-4AB9-2620-3713378319F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{745F0BED-054C-4AB9-2620-3713378319F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{745F0BED-054C-4AB9-2620-3713378319F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB413424-593F-ECFD-9238-3676B6712439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB413424-593F-ECFD-9238-3676B6712439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB413424-593F-ECFD-9238-3676B6712439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB413424-593F-ECFD-9238-3676B6712439}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
