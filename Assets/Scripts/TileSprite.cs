@@ -3,23 +3,50 @@ using UnityEngine;
 using System.Collections;
 
 [Serializable]
-public class TileSprite
+public class TileSprite : MonoBehaviour
 {
-    public Sprite TileImage;
-    public Tiles TileType;
-    public Vector2 TileCoord;
+    [SerializeField]
+    private Tiles _tileType;
+    private Vector2 _tileCoord;
+   
 
     public TileSprite()
     {
-        TileImage = new Sprite();
-        TileType = Tiles.Empty;
-        TileCoord = new Vector2();
+        _tileType = Tiles.Empty;
+        _tileCoord = new Vector2();
     }
 
-    public TileSprite( Sprite image, Tiles tile, Vector2 coord)
+    public TileSprite(Tiles tile, Vector2 coord)
     {
-        TileImage = image;
-        TileType = tile;
-        TileCoord = coord;
+        _tileType = tile;
+        _tileCoord = coord;
     }
+
+    public Tiles TileType
+    {
+        get
+        {
+            return _tileType;
+        }
+
+        set
+        {
+            _tileType = value;
+        }
+    }
+
+    public Vector2 TileCoord
+    {
+        get
+        {
+            return _tileCoord;
+        }
+
+        set
+        {
+            _tileCoord = value;
+        }
+    }
+
+
 }
