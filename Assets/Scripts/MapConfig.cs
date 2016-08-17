@@ -3,15 +3,20 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "MapConfig", menuName ="Scriptable/Maps/Config")]
 public class MapConfig : ScriptableObject
-{
-    public Vector2 MapSize;
+{   
+    [ReadOnly]
+    public Vector2 MapSize = new Vector2(10, 10);
+    [Range(0, 25)]
     public int NumberOfDifferentTiles;
     public string WorldName;
     public GameObject TilesPrefab;
-
+    [Range(0, 100)]
     public int percentageEmpty;
+    [Range(0, 100)]
     public int percentageSmall;
+    [Range(0, 100)]
     public int percentageMedium;
+    [Range(0, 100)]
     public int percentageBig;
 
     public List<GameObject> GetTilesType(string type)

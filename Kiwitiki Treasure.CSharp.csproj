@@ -86,6 +86,8 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\MapConfig.cs" />
     <Compile Include="Assets\Scripts\MapManager.cs" />
+    <Compile Include="Assets\Scripts\ReadOnlyAttribute.cs" />
+    <Compile Include="Assets\Scripts\ReadOnlyAttributeDrawer.cs" />
     <Compile Include="Assets\Scripts\TileSprite.cs" />
     <Compile Include="Assets\Scripts\Tiles.cs" />
   </ItemGroup>

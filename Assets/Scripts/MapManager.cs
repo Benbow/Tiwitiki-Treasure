@@ -70,6 +70,7 @@ public class MapManager : MonoBehaviour {
         List<GameObject> smallTiles = _mapConfig.GetTilesType("TilesSmall");
         List<GameObject> mediumTiles = _mapConfig.GetTilesType("TilesMedium");
         List<GameObject> bigTiles = _mapConfig.GetTilesType("TilesBig");
+        List<GameObject> backgroundTiles = _mapConfig.GetTilesType("Background");
 
         //Avec Gestion du nombre de tiles differentes
         int tilesRemovedNumber = (smallTiles.Count + mediumTiles.Count + bigTiles.Count) - _mapConfig.NumberOfDifferentTiles;
@@ -141,6 +142,14 @@ public class MapManager : MonoBehaviour {
             }
         }
 
+        //poser le background
+        int randBg = Random.Range(0, backgroundTiles.Count);
+        GameObject newBg = (GameObject)GameObject.Instantiate(backgroundTiles[randBg]);
+        newBg.transform.position = new Vector3(_mapConfig.MapSize.x/2f + ratioTiles/2f, -_mapConfig.MapSize.y/2f - ratioTiles/2f, _mapConfig.MapSize.x);
+        newBg.transform.localScale = new Vector3(11, 11, 1);
+        newBg.name = "Background";
+        newBg.transform.parent = map.transform;
+
         //verifier les carres vides et les supprimer
         for (int i = 1; i < _mapConfig.MapSize.y - 1; i++)
         {
@@ -196,5 +205,37 @@ public class MapManager : MonoBehaviour {
         //temporary move Camera
         map.transform.position = new Vector3(-4, 6, _mapConfig.MapSize.y);
         map.transform.localScale = new Vector3(0.7f, 0.7f, 1);
+    }
+
+    void OnGUI()
+    {
+        // Make a background box
+        GUI.Box(new Rect(40, 410, 100, 90), "Test menu");
+
+        // Make the first button
+        if (GUI.Button(new Rect(50, 440, 80, 20), "New Map"))
+        {
+            RebuildMap();
+        }
+
+        // Make the second button.
+        if (GUI.Button(new Rect(50, 470, 80, 20), "New World"))
+        {
+            MapConfig[] mapConfs = Resources.FindObjectsOfTypeAll<MapConfig>();
+            MapConfig newMapConf;
+            do
+            {
+                newMapConf = mapConfs[Random.Range(0, mapConfs.Length)];
+            } while (newMapConf.WorldName == _mapConfig.WorldName);
+
+            _mapConfig = newMapConf;
+            RebuildMap();
+        }
+    }
+
+    void RebuildMap()
+    {
+        Destroy(this.transform.Find("Map").gameObject);
+        GenerateMap();
     }
 }
