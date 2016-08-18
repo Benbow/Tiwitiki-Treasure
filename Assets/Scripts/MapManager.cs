@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class MapManager : MonoBehaviour {
 
@@ -210,25 +211,28 @@ public class MapManager : MonoBehaviour {
     void OnGUI()
     {
         // Make a background box
-        GUI.Box(new Rect(40, 410, 100, 90), "Test menu");
+        GUI.Box(new Rect(40, 430, 100, 90), "Test menu");
 
         // Make the first button
-        if (GUI.Button(new Rect(50, 440, 80, 20), "New Map"))
+        if (GUI.Button(new Rect(50, 460, 80, 20), "New Map"))
         {
             RebuildMap();
         }
 
         // Make the second button.
-        if (GUI.Button(new Rect(50, 470, 80, 20), "New World"))
+        if (GUI.Button(new Rect(50, 490, 80, 20), "New World"))
         {
-            MapConfig[] mapConfs = Resources.FindObjectsOfTypeAll<MapConfig>();
+            Object[] mapConfs = Resources.LoadAll("Scriptable/Map/Conf");
             MapConfig newMapConf;
-            do
+            Debug.Log(mapConfs.Length);
+            if (mapConfs.Length > 1)
             {
-                newMapConf = mapConfs[Random.Range(0, mapConfs.Length)];
-            } while (newMapConf.WorldName == _mapConfig.WorldName);
-
-            _mapConfig = newMapConf;
+                do
+                {
+                    newMapConf = (MapConfig)mapConfs[Random.Range(0, mapConfs.Length)];
+                } while (newMapConf.WorldName == _mapConfig.WorldName);
+                _mapConfig = newMapConf;
+            }
             RebuildMap();
         }
     }
