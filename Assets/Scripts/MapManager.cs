@@ -5,10 +5,36 @@ using UnityEditor;
 
 public class MapManager : MonoBehaviour {
 
+    public static MapManager instance;
+
+    private MapManager() { }
+
+    public static MapManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new MapManager();
+            }
+            return instance;
+        }
+    }
+
+
+
     //MapConfig
     public const float ratioTiles = 1.28f;
+    public Vector2 solucePosRatio = new Vector2(0, 5);
 
     private GameObject[,] _gameMap;
+
+    //soluce config
+    private GameObject _mapBg;
+
+    private List<GameObject> _gameSoluce = new List<GameObject>();
+
+    private Vector2 _soluceMapPos = new Vector2();
 
     [SerializeField]
     MapConfig _mapConfig;
@@ -26,7 +52,23 @@ public class MapManager : MonoBehaviour {
         }
     }
 
-    public GameObject tile(int x, int y)
+    public List<GameObject> GameSoluce
+    {
+        get
+        {
+            return _gameSoluce;
+        }
+    }
+
+    public Vector2 SoluceMapPos
+    {
+        get
+        {
+            return _soluceMapPos;
+        }
+    }
+
+    public GameObject Tile(int x, int y)
     {
         return _gameMap[x, y];
     }
@@ -35,6 +77,7 @@ public class MapManager : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        MapManager.instance = this;
         GenerateMap();
 	}
 	
@@ -43,7 +86,7 @@ public class MapManager : MonoBehaviour {
 	
 	}
 
-    void GenerateMap()
+    public void GenerateMap()
     {
         //Map, GameObject who contain all the map
         GameObject map = new GameObject();
@@ -90,7 +133,7 @@ public class MapManager : MonoBehaviour {
 
         foreach (int i in removedTileId)
         {
-            Debug.Log("Removed id : " + i);
+            //Debug.Log("Removed id : " + i);
         }
 
         //remplissage du shufflebag en omettant les tiles deselectionner
@@ -125,7 +168,7 @@ public class MapManager : MonoBehaviour {
                 i--;
         }
 
-        Debug.Log(shuffleBagSprites.Count);
+        //Debug.Log(shuffleBagSprites.Count);
 
         //poser les tiles
         for (int i = 0; i < _mapConfig.MapSize.y; i++)
@@ -146,10 +189,12 @@ public class MapManager : MonoBehaviour {
         //poser le background
         int randBg = Random.Range(0, backgroundTiles.Count);
         GameObject newBg = (GameObject)GameObject.Instantiate(backgroundTiles[randBg]);
+        _mapBg = newBg;
         newBg.transform.position = new Vector3(_mapConfig.MapSize.x/2f + ratioTiles/2f, -_mapConfig.MapSize.y/2f - ratioTiles/2f, _mapConfig.MapSize.x);
         newBg.transform.localScale = new Vector3(11, 11, 1);
         newBg.name = "Background";
         newBg.transform.parent = map.transform;
+
 
         //verifier les carres vides et les supprimer
         for (int i = 1; i < _mapConfig.MapSize.y - 1; i++)
@@ -206,6 +251,43 @@ public class MapManager : MonoBehaviour {
         //temporary move Camera
         map.transform.position = new Vector3(-4, 6, _mapConfig.MapSize.y);
         map.transform.localScale = new Vector3(0.7f, 0.7f, 1);
+
+        GenerateSoluce();
+        
+    }
+
+    public void GenerateSoluce()
+    {
+        GameObject soluceObject = new GameObject();
+        soluceObject.transform.parent = transform;
+        soluceObject.name = "Solution";
+
+        //create game Soluce
+        int randTargetX = Random.Range(1, (int)_mapConfig.MapSize.x - 1);
+        int randTargetY = Random.Range(1, (int)_mapConfig.MapSize.y - 1);
+        _soluceMapPos = new Vector2(randTargetY, randTargetX);
+
+        //create Background
+        GameObject soluceBg = (GameObject)GameObject.Instantiate(_mapBg);
+        soluceBg.transform.parent = soluceObject.transform;
+        soluceBg.name = "SoluceBg";
+        soluceBg.transform.localScale = new Vector3(3, 3, 1);
+        soluceBg.transform.localPosition = new Vector3(solucePosRatio.x, -solucePosRatio.y-0.1f, 1.5f);
+
+        //Select soluce Tiles
+        for (int i = -1; i < 2; i++)
+        {
+            for (int j = -1; j < 2; j++)
+            {
+                GameObject soluceTile = (GameObject)GameObject.Instantiate(_gameMap[randTargetY + i, randTargetX + j]);
+                soluceTile.transform.parent = soluceObject.transform;
+                soluceTile.transform.localPosition = new Vector3(solucePosRatio.x + (j * ratioTiles), -solucePosRatio.y - (i * ratioTiles), 1-i/10f);
+                Destroy(soluceTile.GetComponent<BoxCollider2D>());
+                GameSoluce.Add(soluceTile);
+            }
+        }
+
+        
     }
 
     void OnGUI()
@@ -224,7 +306,6 @@ public class MapManager : MonoBehaviour {
         {
             Object[] mapConfs = Resources.LoadAll("Scriptable/Map/Conf");
             MapConfig newMapConf;
-            Debug.Log(mapConfs.Length);
             if (mapConfs.Length > 1)
             {
                 do
@@ -237,9 +318,10 @@ public class MapManager : MonoBehaviour {
         }
     }
 
-    void RebuildMap()
+    public void RebuildMap()
     {
         Destroy(this.transform.Find("Map").gameObject);
+        Destroy(this.transform.Find("Solution").gameObject);
         GenerateMap();
     }
 }
