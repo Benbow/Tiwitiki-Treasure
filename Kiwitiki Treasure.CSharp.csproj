@@ -84,12 +84,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\MapConfig.cs" />
-    <Compile Include="Assets\Scripts\MapManager.cs" />
-    <Compile Include="Assets\Scripts\ReadOnlyAttribute.cs" />
-    <Compile Include="Assets\Scripts\ReadOnlyAttributeDrawer.cs" />
-    <Compile Include="Assets\Scripts\TileSprite.cs" />
-    <Compile Include="Assets\Scripts\Tiles.cs" />
+    <Compile Include="Assets\Scripts\Game\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Game\MapConfig.cs" />
+    <Compile Include="Assets\Scripts\Game\MapManager.cs" />
+    <Compile Include="Assets\Scripts\Game\TileSprite.cs" />
+    <Compile Include="Assets\Scripts\Ui\UiManager.cs" />
+    <Compile Include="Assets\Scripts\Utility\ReadOnlyAttribute.cs" />
+    <Compile Include="Assets\Scripts\Utility\ReadOnlyAttributeDrawer.cs" />
+    <Compile Include="Assets\Scripts\Utility\Tiles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\Cameras\CameraGuidelines.txt" />

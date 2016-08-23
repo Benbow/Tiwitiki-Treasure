@@ -25,60 +25,27 @@ public class MapManager : MonoBehaviour {
 
     //MapConfig
     public const float ratioTiles = 1.28f;
+    [ReadOnly]
     public Vector2 solucePosRatio = new Vector2(0, 5);
-
-    private GameObject[,] _gameMap;
+    public GameObject EmptyTile;
+    public GameObject TargetSoluce;
+    
 
     //soluce config
     private GameObject _mapBg;
-
-    private List<GameObject> _gameSoluce = new List<GameObject>();
-
-    private Vector2 _soluceMapPos = new Vector2();
+    
 
     [SerializeField]
     MapConfig _mapConfig;
 
-    public GameObject[,] GameMap
+    void Awake()
     {
-        get
-        {
-            return _gameMap;
-        }
-
-        set
-        {
-            _gameMap = value;
-        }
+        instance = this;
     }
-
-    public List<GameObject> GameSoluce
-    {
-        get
-        {
-            return _gameSoluce;
-        }
-    }
-
-    public Vector2 SoluceMapPos
-    {
-        get
-        {
-            return _soluceMapPos;
-        }
-    }
-
-    public GameObject Tile(int x, int y)
-    {
-        return _gameMap[x, y];
-    }
-
 
     // Use this for initialization
     void Start ()
     {
-        MapManager.instance = this;
-        GenerateMap();
 	}
 	
 	// Update is called once per frame
@@ -94,7 +61,7 @@ public class MapManager : MonoBehaviour {
         map.name = "Map";
 
         //Array that contains all the map tile
-        GameMap = new GameObject[(int)_mapConfig.MapSize.y, (int)_mapConfig.MapSize.x];
+        GameManager.instance.GameMap = new GameObject[(int)_mapConfig.MapSize.y, (int)_mapConfig.MapSize.x];
 
         //choisir les tiles
         float tilesNumber = _mapConfig.MapSize.x * _mapConfig.MapSize.y;
@@ -110,7 +77,6 @@ public class MapManager : MonoBehaviour {
 
         //generer la liste des tiles a poser
         List<GameObject> shuffleBagSprites = new List<GameObject>();
-        List<GameObject> emptyTiles = _mapConfig.GetTilesType("TilesEmpty");
         List<GameObject> smallTiles = _mapConfig.GetTilesType("TilesSmall");
         List<GameObject> mediumTiles = _mapConfig.GetTilesType("TilesMedium");
         List<GameObject> bigTiles = _mapConfig.GetTilesType("TilesBig");
@@ -139,7 +105,7 @@ public class MapManager : MonoBehaviour {
         //remplissage du shufflebag en omettant les tiles deselectionner
         for (int i = 0; i < emptyTilesNumber; i++)
         {
-            shuffleBagSprites.Add(emptyTiles[Random.Range(0, emptyTiles.Count)]);
+            shuffleBagSprites.Add(EmptyTile);
         }
         for (int i = 0; i < smallTilesNumber; i++)
         {
@@ -181,7 +147,7 @@ public class MapManager : MonoBehaviour {
                 newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i, j);
                 newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
                 newTiles.transform.parent = map.transform;
-                GameMap[i, j] = newTiles;
+                GameManager.instance.GameMap[i, j] = newTiles;
                 shuffleBagSprites.RemoveAt(rand);
             }
         }
@@ -201,15 +167,15 @@ public class MapManager : MonoBehaviour {
         {
             for (int j = 1; j < _mapConfig.MapSize.x - 1; j++)
             {
-                if (GameMap[j - 1, i - 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j, i - 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j + 1, i - 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j - 1, i].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j, i].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j + 1, i].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j - 1, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
-                    GameMap[j + 1, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty)
+                if (GameManager.instance.GameMap[j - 1, i - 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j, i - 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j + 1, i - 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j - 1, i].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j, i].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j + 1, i].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j - 1, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
+                    GameManager.instance.GameMap[j + 1, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty)
                 {
                     Debug.Log("TEST");
                     int randNumberModif = Random.Range(1, 4);
@@ -220,7 +186,7 @@ public class MapManager : MonoBehaviour {
                         int randY = Random.Range(-1, 2);
                         int randType = Random.Range(1, 4);
 
-                        GameObject.Destroy(GameMap[j + randX, i + randY]);
+                        GameObject.Destroy(GameManager.instance.GameMap[j + randX, i + randY]);
                         GameObject newTiles = new GameObject();
                         switch (randType)
                         {
@@ -241,7 +207,7 @@ public class MapManager : MonoBehaviour {
                         newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i + randY, j + randX);
                         newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
                         newTiles.transform.parent = map.transform;
-                        GameMap[i + randY, j + randX] = newTiles;
+                        GameManager.instance.GameMap[i + randY, j + randX] = newTiles;
                         Debug.Log("X = " + (i + randY) + "| Y = " + (j + randX) + "| Type = " + newTiles.GetComponent<TileSprite>().TileType);
                     }
                 }
@@ -249,7 +215,7 @@ public class MapManager : MonoBehaviour {
         }
 
         //temporary move Camera
-        map.transform.position = new Vector3(-4, 6, _mapConfig.MapSize.y);
+        map.transform.position = new Vector3(-4, 5.3f, _mapConfig.MapSize.y);
         map.transform.localScale = new Vector3(0.7f, 0.7f, 1);
 
         GenerateSoluce();
@@ -265,7 +231,7 @@ public class MapManager : MonoBehaviour {
         //create game Soluce
         int randTargetX = Random.Range(1, (int)_mapConfig.MapSize.x - 1);
         int randTargetY = Random.Range(1, (int)_mapConfig.MapSize.y - 1);
-        _soluceMapPos = new Vector2(randTargetY, randTargetX);
+        GameManager.instance.SoluceMapPos = new Vector2(randTargetY, randTargetX);
 
         //create Background
         GameObject soluceBg = (GameObject)GameObject.Instantiate(_mapBg);
@@ -279,15 +245,34 @@ public class MapManager : MonoBehaviour {
         {
             for (int j = -1; j < 2; j++)
             {
-                GameObject soluceTile = (GameObject)GameObject.Instantiate(_gameMap[randTargetY + i, randTargetX + j]);
+                GameObject soluceTile = (GameObject)GameObject.Instantiate(GameManager.instance.GameMap[randTargetY + i, randTargetX + j]);
                 soluceTile.transform.parent = soluceObject.transform;
                 soluceTile.transform.localPosition = new Vector3(solucePosRatio.x + (j * ratioTiles), -solucePosRatio.y - (i * ratioTiles), 1-i/10f);
                 Destroy(soluceTile.GetComponent<BoxCollider2D>());
-                GameSoluce.Add(soluceTile);
+                GameManager.instance.GameSoluce.Add(soluceTile);
             }
         }
 
-        
+        int randMoveX = 0;
+        int randMoveY = 0;
+        if (!_mapConfig.CentralTreasureLocation)
+        {
+            randMoveX = Random.Range(-1, 2);
+            randTargetX = randTargetX + randMoveX;
+            randMoveY = Random.Range(-1, 2);
+            randTargetY = randTargetY + randMoveY;
+            GameManager.instance.SoluceMapPos = new Vector2(randTargetY, randTargetX);
+        }
+
+        GameObject soluceTarget = (GameObject)GameObject.Instantiate(TargetSoluce);
+        soluceTarget.name = "Treasure location";
+        soluceTarget.transform.localPosition = new Vector3(solucePosRatio.x + (randMoveX * ratioTiles), -solucePosRatio.y - 0.1f - (randMoveY * ratioTiles), 1.3f);
+        soluceTarget.transform.parent = soluceObject.transform;
+
+
+        soluceObject.transform.localScale = new Vector3(0.7f, 0.7f, 1);
+        soluceObject.transform.localPosition = new Vector3(0, -2f, 0);
+
     }
 
     void OnGUI()

@@ -19,6 +19,8 @@ public class MapConfig : ScriptableObject
     [Range(0, 100)]
     public int percentageBig;
 
+    public bool CentralTreasureLocation = true;
+
     public List<GameObject> GetTilesType(string type)
     {
         List<GameObject> returnList = new List<GameObject>();
