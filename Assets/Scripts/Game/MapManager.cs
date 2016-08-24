@@ -73,8 +73,6 @@ public class MapManager : MonoBehaviour {
         //Add empty tiles if percentage number is not reached
         emptyTilesNumber += tilesNumber - (emptyTilesNumber + smallTilesNumber + mediumTilesNumber + bigTilesNumber) ; 
 
-        Debug.Log(tilesNumber + " / " + emptyTilesNumber + " / " + smallTilesNumber + " / " + mediumTilesNumber + " / " + bigTilesNumber);
-
         //generer la liste des tiles a poser
         List<GameObject> shuffleBagSprites = new List<GameObject>();
         List<GameObject> smallTiles = _mapConfig.GetTilesType("TilesSmall");
@@ -95,11 +93,6 @@ public class MapManager : MonoBehaviour {
                 removedTileId.Add(randId);
             else
                 i--;
-        }
-
-        foreach (int i in removedTileId)
-        {
-            //Debug.Log("Removed id : " + i);
         }
 
         //remplissage du shufflebag en omettant les tiles deselectionner
@@ -133,8 +126,6 @@ public class MapManager : MonoBehaviour {
             else
                 i--;
         }
-
-        //Debug.Log(shuffleBagSprites.Count);
 
         //poser les tiles
         for (int i = 0; i < _mapConfig.MapSize.y; i++)
