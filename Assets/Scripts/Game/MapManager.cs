@@ -19,9 +19,34 @@ public class MapManager : MonoBehaviour {
         }
     }
 
+    public MapConfig MapConfigs
+    {
+        get
+        {
+            return _mapConfig;
+        }
 
+        set
+        {
+            _mapConfig = value;
+        }
+    }
+
+    public GameObject MapParent
+    {
+        get
+        {
+            return _mapParent;
+        }
+
+        set
+        {
+            _mapParent = value;
+        }
+    }
 
     //MapConfig
+    private GameObject _mapParent;
     public const float ratioTiles = 1.28f;
     #if UNITY_EDITOR
     [ReadOnly]
@@ -29,6 +54,10 @@ public class MapManager : MonoBehaviour {
     public Vector2 solucePosRatio = new Vector2(0, 5);
     public GameObject EmptyTile;
     public GameObject TargetSoluce;
+    public List<Color> SpriteColors = new List<Color>();
+    public Sprite WinSprite;
+    public Sprite LoseSprite;
+    public GameObject Star;
     
 
     //soluce config
@@ -56,9 +85,9 @@ public class MapManager : MonoBehaviour {
     public void GenerateMap()
     {
         //Map, GameObject who contain all the map
-        GameObject map = new GameObject();
-        map.transform.parent = transform;
-        map.name = "Map";
+       MapParent = new GameObject();
+        MapParent.transform.parent = transform;
+        MapParent.name = "Map";
 
         //Array that contains all the map tile
         GameManager.instance.GameMap = new GameObject[(int)_mapConfig.MapSize.y, (int)_mapConfig.MapSize.x];
@@ -78,7 +107,6 @@ public class MapManager : MonoBehaviour {
         List<GameObject> smallTiles = _mapConfig.GetTilesType("TilesSmall");
         List<GameObject> mediumTiles = _mapConfig.GetTilesType("TilesMedium");
         List<GameObject> bigTiles = _mapConfig.GetTilesType("TilesBig");
-        List<GameObject> backgroundTiles = _mapConfig.GetTilesType("Background");
 
         //Avec Gestion du nombre de tiles differentes
         int tilesRemovedNumber = (smallTiles.Count + mediumTiles.Count + bigTiles.Count) - _mapConfig.NumberOfDifferentTiles;
@@ -137,20 +165,19 @@ public class MapManager : MonoBehaviour {
                 newTiles.transform.position = new Vector3(j * ratioTiles, i * (-ratioTiles), -i);
                 newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i, j);
                 newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
-                newTiles.transform.parent = map.transform;
+                newTiles.transform.parent = MapParent.transform;
                 GameManager.instance.GameMap[i, j] = newTiles;
                 shuffleBagSprites.RemoveAt(rand);
             }
         }
 
         //poser le background
-        int randBg = Random.Range(0, backgroundTiles.Count);
-        GameObject newBg = (GameObject)GameObject.Instantiate(backgroundTiles[randBg]);
+        GameObject newBg = (GameObject)GameObject.Instantiate(_mapConfig.TileBg);
         _mapBg = newBg;
         newBg.transform.position = new Vector3(_mapConfig.MapSize.x/2f + ratioTiles/2f, -_mapConfig.MapSize.y/2f - ratioTiles/2f, _mapConfig.MapSize.x);
         newBg.transform.localScale = new Vector3(11, 11, 1);
         newBg.name = "Background";
-        newBg.transform.parent = map.transform;
+        newBg.transform.parent = MapParent.transform;
 
 
         //verifier les carres vides et les supprimer
@@ -197,7 +224,7 @@ public class MapManager : MonoBehaviour {
                         newTiles.transform.position = new Vector3((j + randX) * ratioTiles, (i + randY) * (-ratioTiles), -i);
                         newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i + randY, j + randX);
                         newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
-                        newTiles.transform.parent = map.transform;
+                        newTiles.transform.parent = MapParent.transform;
                         GameManager.instance.GameMap[i + randY, j + randX] = newTiles;
                         Debug.Log("X = " + (i + randY) + "| Y = " + (j + randX) + "| Type = " + newTiles.GetComponent<TileSprite>().TileType);
                     }
@@ -206,8 +233,8 @@ public class MapManager : MonoBehaviour {
         }
 
         //temporary move Camera
-        map.transform.position = new Vector3(-4, 5.3f, _mapConfig.MapSize.y);
-        map.transform.localScale = new Vector3(0.7f, 0.7f, 1);
+        MapParent.transform.position = new Vector3(-4, 5.3f, _mapConfig.MapSize.y);
+        MapParent.transform.localScale = new Vector3(0.7f, 0.7f, 1);
 
         GenerateSoluce();
         

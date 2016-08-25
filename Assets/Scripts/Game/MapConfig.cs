@@ -12,6 +12,8 @@ public class MapConfig : ScriptableObject
     public int NumberOfDifferentTiles;
     public string WorldName;
     public GameObject TilesPrefab;
+    public GameObject TileBg;
+    public GameObject TreasureChest;
     [Range(0, 100)]
     public int percentageEmpty;
     [Range(0, 100)]

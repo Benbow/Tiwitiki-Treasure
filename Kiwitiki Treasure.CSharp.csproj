@@ -89,6 +89,7 @@
     <Compile Include="Assets\Scripts\Game\MapManager.cs" />
     <Compile Include="Assets\Scripts\Game\TileSprite.cs" />
     <Compile Include="Assets\Scripts\Ui\UiManager.cs" />
+    <Compile Include="Assets\Scripts\Utility\FloatingEffect.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttributeDrawer.cs" />
     <Compile Include="Assets\Scripts\Utility\Tiles.cs" />

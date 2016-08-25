@@ -52,11 +52,11 @@ public class TileSprite : MonoBehaviour
     {
         if (GameManager.instance.SoluceMapPos == this.TileCoord)
         {
-            GameManager.instance.Found();
+            GameManager.instance.Found(this.gameObject);
         }
         else
         {
-            GameManager.instance.Fail();
+            GameManager.instance.Fail(this.gameObject);
         }
     }
 

@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour {
     //Utility
     private float _timerReplay = -1;
     private float _timerReplayDelay = 0;
+    private GameObject _treasureChest;
 
     public GameObject[,] GameMap
     {
@@ -107,12 +108,13 @@ public class GameManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         MapManager.instance.GenerateMap();
-        UpdatePoints();
+        UpdatePointsUi();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
+        //Move the arrow points
         if (IsPlaying)
         {
             _timerPoint += Time.deltaTime;
@@ -122,6 +124,8 @@ public class GameManager : MonoBehaviour {
             }
         }
 
+
+        //Only for delayed Replay function
         if (_timerReplay >= 0)
         {
             _timerReplay += Time.deltaTime;
@@ -134,47 +138,61 @@ public class GameManager : MonoBehaviour {
         }
 	}
 
-    public void Fail()
+    public void Fail(GameObject tile)
     {
         if (IsPlaying)
         {
-            _pointsdEarned += 5;
+            _pointsdEarned = 5;
+            //change le sprite de la case
+            tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.LoseSprite;
             Debug.Log("OOOOO Sorry, you lose, here take 5 stars ! Points :" + _pointsdEarned);
-            UpdatePoints();
+
+            ChestAppear(tile, 6, false);
+
+            UpdatePointsUi();
             ArrowTimer.transform.localPosition = _ArrowFailPosition;
             IsPlaying = false;
             StartDelayedReplay(3);
         }
     }
 
-    public void Found()
+    public void Found(GameObject tile)
     {
         if (IsPlaying)
         {
             int pointsMilestone = Mathf.CeilToInt(_timerPoint / 2f);
+
             switch (pointsMilestone)
             {
                 case 1:
-                    _pointsdEarned += 1000;
+                    _pointsdEarned = 1000;
                     break;
                 case 2:
-                    _pointsdEarned += 500;
+                    _pointsdEarned = 500;
                     break;
                 case 3:
-                    _pointsdEarned += 250;
+                    _pointsdEarned = 250;
                     break;
                 case 4:
-                    _pointsdEarned += 100;
+                    _pointsdEarned = 100;
                     break;
                 case 5:
-                    _pointsdEarned += 50;
+                    _pointsdEarned = 50;
                     break;
                 default:
-                    _pointsdEarned += 10;
+                    _pointsdEarned = 10;
                     break;
             }
+            if (pointsMilestone > 6)
+                pointsMilestone = 6;
+            // Change le sprite de la tile
+            tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
+            tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone-1];
+
+            ChestAppear(tile, pointsMilestone, true);
+
             Debug.Log("Congrats ! you earned " + _pointsdEarned);
-            UpdatePoints();
+            UpdatePointsUi();
             IsPlaying = false;
             StartDelayedReplay(3);
         }
@@ -188,6 +206,7 @@ public class GameManager : MonoBehaviour {
 
     public void Replay()
     {
+        Destroy(_treasureChest);
         MapManager.instance.RebuildMap();
         ResetTimerPoints();
         IsPlaying = true;
@@ -199,9 +218,24 @@ public class GameManager : MonoBehaviour {
         ArrowTimer.transform.localPosition = _ArrowStartPosition;
     }
 
-    public void UpdatePoints()
+    public void UpdatePointsUi()
     {
         ValuePointsText.text = _pointsdEarned + " / " + _MaxPoints;
         ValuePointsBar.fillAmount = (float)_pointsdEarned / (float)_MaxPoints;
+    }
+
+    private void ChestAppear(GameObject tile, int pointsMilestone, bool isChestVisible)
+    {
+        //Apparait le coffre
+        _treasureChest = (GameObject)GameObject.Instantiate(MapManager.instance.MapConfigs.TreasureChest);
+        _treasureChest.transform.parent = MapManager.instance.MapParent.transform;
+        _treasureChest.transform.localPosition = tile.transform.localPosition;
+        if (!isChestVisible)
+        {
+            _treasureChest.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 0);
+        }
+        //Change le Texte
+        _treasureChest.GetComponentInChildren<TextMesh>().text = "+ " + _pointsdEarned;
+        _treasureChest.GetComponentInChildren<TextMesh>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
     }
 }
