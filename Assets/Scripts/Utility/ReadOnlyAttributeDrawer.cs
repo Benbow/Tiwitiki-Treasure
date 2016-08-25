@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+
 
 [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
 /**
@@ -21,3 +23,4 @@ public class ReadOnlyAttributeDrawer : PropertyDrawer
         GUI.enabled = true; // Enable fields
     }
 }
+#endif

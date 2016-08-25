@@ -4,7 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MapConfig", menuName ="Scriptable/Maps/Config")]
 public class MapConfig : ScriptableObject
 {   
+    #if UNITY_EDITOR
     [ReadOnly]
+    #endif
     public Vector2 MapSize = new Vector2(10, 10);
     [Range(0, 25)]
     public int NumberOfDifferentTiles;

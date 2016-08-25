@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 
 public class MapManager : MonoBehaviour {
 
@@ -25,7 +23,9 @@ public class MapManager : MonoBehaviour {
 
     //MapConfig
     public const float ratioTiles = 1.28f;
+    #if UNITY_EDITOR
     [ReadOnly]
+    #endif
     public Vector2 solucePosRatio = new Vector2(0, 5);
     public GameObject EmptyTile;
     public GameObject TargetSoluce;
