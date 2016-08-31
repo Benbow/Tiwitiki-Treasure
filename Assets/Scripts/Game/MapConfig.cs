@@ -3,7 +3,8 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "MapConfig", menuName ="Scriptable/Maps/Config")]
 public class MapConfig : ScriptableObject
-{   
+{
+    public int WorldId;
     #if UNITY_EDITOR
     [ReadOnly]
     #endif

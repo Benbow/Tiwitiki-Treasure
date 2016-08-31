@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using DG.Tweening;
+using System;
 
 public class GameManager : MonoBehaviour {
 
@@ -20,6 +22,11 @@ public class GameManager : MonoBehaviour {
             return instance;
         }
     }
+    //Config
+    [SerializeField]
+    private GameConfig _gameConfig;
+    [SerializeField]
+    private PlayerConfig _playerConfig;
 
     // Relative to Map
     private GameObject[,] _gameMap;
@@ -36,12 +43,15 @@ public class GameManager : MonoBehaviour {
     public GameObject ArrowTimer;
     private float _timerPoint = 0;
     private bool _isPlaying = true;
+    private bool _isPaused = false;
+    public Image ValuePointsBar;
+    public Text ValuePointsText;
+    public GameObject TextPoints;
 
     // Temporary Point gesture
     private int _pointsdEarned = 0;
-    private const int _MaxPoints = 1000;
-    public Image ValuePointsBar;
-    public Text ValuePointsText;
+    double worldInitial;
+    double levelInitial;
 
     //Utility
     private float _timerReplay = -1;
@@ -100,6 +110,45 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public GameConfig MyGameConfig
+    {
+        get
+        {
+            return _gameConfig;
+        }
+
+        set
+        {
+            _gameConfig = value;
+        }
+    }
+
+    public PlayerConfig MyPlayerConfig
+    {
+        get
+        {
+            return _playerConfig;
+        }
+
+        set
+        {
+            _playerConfig = value;
+        }
+    }
+
+    public bool IsPaused
+    {
+        get
+        {
+            return _isPaused;
+        }
+
+        set
+        {
+            _isPaused = value;
+        }
+    }
+
     void Awake()
     {
         instance = this;
@@ -107,103 +156,99 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        DOTween.Init();
+
         MapManager.instance.GenerateMap();
         UpdatePointsUi();
+        UpdatePointsReward();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
-        //Move the arrow points
-        if (IsPlaying)
+        if (!IsPaused)
         {
-            _timerPoint += Time.deltaTime;
-            if (_timerPoint < 11)
+            //Move the arrow points
+            if (IsPlaying)
             {
-                ArrowTimer.transform.Translate(Vector3.down * _SpeedTimer * Time.deltaTime);
-            }
-        }
-
-
-        //Only for delayed Replay function
-        if (_timerReplay >= 0)
-        {
-            _timerReplay += Time.deltaTime;
-            if(_timerReplay > _timerReplayDelay)
-            {
-                _timerReplay = -1;
-                Replay();
+                _timerPoint += Time.deltaTime;
+                if (_timerPoint < 11)
+                {
+                    ArrowTimer.transform.Translate(Vector3.down * _SpeedTimer * Time.deltaTime);
+                }
             }
 
+
+            //Only for delayed Replay function
+            if (_timerReplay >= 0)
+            {
+                _timerReplay += Time.deltaTime;
+                if (_timerReplay > _timerReplayDelay)
+                {
+                    _timerReplay = -1;
+                    Replay();
+                }
+
+            }
         }
 	}
 
+    //Called if the tile clicked is the wrong one
     public void Fail(GameObject tile)
     {
-        if (IsPlaying)
+        if (!IsPaused)
         {
-            _pointsdEarned = 5;
-            //change le sprite de la case
-            tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.LoseSprite;
-            Debug.Log("OOOOO Sorry, you lose, here take 5 stars ! Points :" + _pointsdEarned);
+            if (IsPlaying)
+            {
+                _pointsdEarned = MyGameConfig.JaugePoints[MyGameConfig.JaugePoints.Count - 1];
+                MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
+                //change le sprite de la case
+                tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.LoseSprite;
 
-            ChestAppear(tile, 6, false);
+                ChestAppear(tile, MyGameConfig.JaugePoints.Count, false);
 
-            UpdatePointsUi();
-            ArrowTimer.transform.localPosition = _ArrowFailPosition;
-            IsPlaying = false;
-            StartDelayedReplay(3);
+                UpdatePointsUi();
+                ArrowTimer.transform.localPosition = _ArrowFailPosition;
+                IsPlaying = false;
+                StartDelayedReplay(3);
+            }
         }
     }
 
+    //Called when the tile cliked is the good one
     public void Found(GameObject tile)
     {
-        if (IsPlaying)
+        if (!IsPaused)
         {
-            int pointsMilestone = Mathf.CeilToInt(_timerPoint / 2f);
-
-            switch (pointsMilestone)
+            if (IsPlaying)
             {
-                case 1:
-                    _pointsdEarned = 1000;
-                    break;
-                case 2:
-                    _pointsdEarned = 500;
-                    break;
-                case 3:
-                    _pointsdEarned = 250;
-                    break;
-                case 4:
-                    _pointsdEarned = 100;
-                    break;
-                case 5:
-                    _pointsdEarned = 50;
-                    break;
-                default:
-                    _pointsdEarned = 10;
-                    break;
+                int pointsMilestone = Mathf.CeilToInt(_timerPoint / 2f);
+                if (pointsMilestone > 6)
+                    pointsMilestone = 6;
+
+                _pointsdEarned = MyGameConfig.JaugePoints[pointsMilestone - 1];
+                MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
+                // Change le sprite de la tile
+                tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
+                tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
+
+                ChestAppear(tile, pointsMilestone, true);
+
+                UpdatePointsUi();
+                IsPlaying = false;
+                StartDelayedReplay(3);
             }
-            if (pointsMilestone > 6)
-                pointsMilestone = 6;
-            // Change le sprite de la tile
-            tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
-            tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone-1];
-
-            ChestAppear(tile, pointsMilestone, true);
-
-            Debug.Log("Congrats ! you earned " + _pointsdEarned);
-            UpdatePointsUi();
-            IsPlaying = false;
-            StartDelayedReplay(3);
         }
     }
 
+    //Function to restart a new map, with a potential delay
     public void StartDelayedReplay(float delay = 0)
     {
         _timerReplayDelay = delay;
         _timerReplay = 0;
     }
 
+    //Actual replay function called after the delay
     public void Replay()
     {
         Destroy(_treasureChest);
@@ -212,18 +257,61 @@ public class GameManager : MonoBehaviour {
         IsPlaying = true;
     }
 
+    //Function to reset the jauge bar points timer
     public void ResetTimerPoints()
     {
         _timerPoint = 0;
         ArrowTimer.transform.localPosition = _ArrowStartPosition;
     }
 
+    //Update the star bar points
     public void UpdatePointsUi()
     {
-        ValuePointsText.text = _pointsdEarned + " / " + _MaxPoints;
-        ValuePointsBar.fillAmount = (float)_pointsdEarned / (float)_MaxPoints;
+        worldInitial = _gameConfig.InitialValue;
+        if (MyPlayerConfig.ActualWorld > 1)
+            worldInitial = _gameConfig.InitialValue * (Math.Pow(1 + _gameConfig.RatioWorld, MyPlayerConfig.ActualWorld-1));
+
+        levelInitial = worldInitial;
+        if (MyPlayerConfig.GetActualLevel() > 1)
+            levelInitial = worldInitial * (Math.Pow(1 + _gameConfig.RatioLevel, MyPlayerConfig.GetActualLevel() - 1));
+        else if (MyPlayerConfig.GetActualLevel() < 0)
+            Debug.LogError("Level not found " + worldInitial + " " + levelInitial);
+
+        
+        if (MyPlayerConfig.GetActualScore() >= levelInitial)
+        {
+            ValuePointsText.text = (int)levelInitial + " / " + (int)levelInitial;
+            ValuePointsBar.DOFillAmount(1, 0.5f).OnComplete(ProcedeNextLevel);
+        }
+        else
+        {
+            ValuePointsText.text = (int)MyPlayerConfig.GetActualScore() + " / " + (int)levelInitial;
+            ValuePointsBar.DOFillAmount(MyPlayerConfig.GetActualScore() / (float)levelInitial, 0.5f);
+        }
+        
     }
 
+    public void ProcedeNextLevel()
+    {
+        int reste = (int)MyPlayerConfig.GetActualScore() - (int)levelInitial;
+        MyPlayerConfig.SetActualScore(0);
+        ValuePointsBar.fillAmount = 0;
+        MyPlayerConfig.SetActualLevel((int)MyPlayerConfig.GetActualLevel() + 1, reste);
+
+        UpdatePointsUi();
+    }
+
+    //Update the text in the jauge
+    public void UpdatePointsReward()
+    {
+        Text[] texts = TextPoints.GetComponentsInChildren<Text>();
+        for (int i = 0; i < MyGameConfig.JaugePoints.Count; i++)
+        {
+            texts[i].text = MyGameConfig.JaugePoints[i].ToString();
+        }
+    }
+
+    //Made the appearance of the chest
     private void ChestAppear(GameObject tile, int pointsMilestone, bool isChestVisible)
     {
         //Apparait le coffre

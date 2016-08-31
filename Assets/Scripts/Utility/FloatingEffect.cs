@@ -40,36 +40,38 @@ public class FloatingEffect : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        _timer += Time.deltaTime;
-        if ((_timer < _delay && _delay > 0) || _fade)
+        if (!GameManager.instance.IsPaused)
         {
-            transform.Translate(new Vector3(_xDirection, _yDirection, 0) * _speed * Time.deltaTime);
-        }
-        else if (_delay > 0 && _destroy)
-        {
-            Destroy(_parent);
-        }
+            _timer += Time.deltaTime;
+            if ((_timer < _delay && _delay > 0) || _fade)
+            {
+                transform.Translate(new Vector3(_xDirection, _yDirection, 0) * _speed * Time.deltaTime);
+            }
+            else if (_delay > 0 && _destroy)
+            {
+                Destroy(_parent);
+            }
 
 
-        if (_timer < _delayFade && _delayFade > 0)
-        {
-            foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
+            if (_timer < _delayFade && _delayFade > 0)
             {
-                if (sprite != null)
-                    sprite.color = Fade(sprite.color);
-            }
-            foreach(Image sprite in GetComponentsInChildren<Image>())
-            {
-                if (sprite != null)
-                    sprite.color = Fade(sprite.color);
-            }
-            foreach (TextMesh text in GetComponentsInChildren<TextMesh>())
-            {
-                if (text != null)
-                    text.color = Fade(text.color);
+                foreach (SpriteRenderer sprite in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (sprite != null)
+                        sprite.color = Fade(sprite.color);
+                }
+                foreach (Image sprite in GetComponentsInChildren<Image>())
+                {
+                    if (sprite != null)
+                        sprite.color = Fade(sprite.color);
+                }
+                foreach (TextMesh text in GetComponentsInChildren<TextMesh>())
+                {
+                    if (text != null)
+                        text.color = Fade(text.color);
+                }
             }
         }
-
 
     }
 

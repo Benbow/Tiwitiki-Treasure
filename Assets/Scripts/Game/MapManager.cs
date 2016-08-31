@@ -271,6 +271,7 @@ public class MapManager : MonoBehaviour {
             }
         }
 
+        //Deplacement de la soluce si necessaire
         int randMoveX = 0;
         int randMoveY = 0;
         if (!_mapConfig.CentralTreasureLocation)
@@ -293,7 +294,7 @@ public class MapManager : MonoBehaviour {
 
     }
 
-    void OnGUI()
+    /*void OnGUI()
     {
         // Make a background box
         GUI.Box(new Rect(40, 430, 100, 90), "Test menu");
@@ -319,7 +320,7 @@ public class MapManager : MonoBehaviour {
             }
             RebuildMap();
         }
-    }
+    }*/
 
     public void RebuildMap()
     {
