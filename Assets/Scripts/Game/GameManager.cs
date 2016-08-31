@@ -50,8 +50,7 @@ public class GameManager : MonoBehaviour {
 
     // Temporary Point gesture
     private int _pointsdEarned = 0;
-    double worldInitial;
-    double levelInitial;
+    double levelStarAmount;
 
     //Utility
     private float _timerReplay = -1;
@@ -159,7 +158,7 @@ public class GameManager : MonoBehaviour {
         DOTween.Init();
 
         MapManager.instance.GenerateMap();
-        UpdatePointsUi();
+        UpdatePointsUi(true);
         UpdatePointsReward();
     }
 	
@@ -188,7 +187,6 @@ public class GameManager : MonoBehaviour {
                     _timerReplay = -1;
                     Replay();
                 }
-
             }
         }
 	}
@@ -200,17 +198,21 @@ public class GameManager : MonoBehaviour {
         {
             if (IsPlaying)
             {
+                //Get the points win
                 _pointsdEarned = MyGameConfig.JaugePoints[MyGameConfig.JaugePoints.Count - 1];
                 MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
+
                 //change le sprite de la case
                 tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.LoseSprite;
 
+                //Animation Chest appear
                 ChestAppear(tile, MyGameConfig.JaugePoints.Count, false);
 
-                UpdatePointsUi();
+
                 ArrowTimer.transform.localPosition = _ArrowFailPosition;
-                IsPlaying = false;
-                StartDelayedReplay(3);
+
+                //Update the star Bar
+                UpdatePointsUi();
             }
         }
     }
@@ -226,17 +228,18 @@ public class GameManager : MonoBehaviour {
                 if (pointsMilestone > 6)
                     pointsMilestone = 6;
 
+                //Get the points win
                 _pointsdEarned = MyGameConfig.JaugePoints[pointsMilestone - 1];
                 MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
                 // Change le sprite de la tile
                 tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
                 tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
 
+                //Animation Chest appear
                 ChestAppear(tile, pointsMilestone, true);
 
+                //Update the star Bar
                 UpdatePointsUi();
-                IsPlaying = false;
-                StartDelayedReplay(3);
             }
         }
     }
@@ -244,6 +247,7 @@ public class GameManager : MonoBehaviour {
     //Function to restart a new map, with a potential delay
     public void StartDelayedReplay(float delay = 0)
     {
+        IsPlaying = false;
         _timerReplayDelay = delay;
         _timerReplay = 0;
     }
@@ -265,40 +269,43 @@ public class GameManager : MonoBehaviour {
     }
 
     //Update the star bar points
-    public void UpdatePointsUi()
-    {
-        worldInitial = _gameConfig.InitialValue;
-        if (MyPlayerConfig.ActualWorld > 1)
-            worldInitial = _gameConfig.InitialValue * (Math.Pow(1 + _gameConfig.RatioWorld, MyPlayerConfig.ActualWorld-1));
+    public void UpdatePointsUi(bool startCall = false)
+    {   
+        levelStarAmount = LevelStarFormula();
 
-        levelInitial = worldInitial;
-        if (MyPlayerConfig.GetActualLevel() > 1)
-            levelInitial = worldInitial * (Math.Pow(1 + _gameConfig.RatioLevel, MyPlayerConfig.GetActualLevel() - 1));
-        else if (MyPlayerConfig.GetActualLevel() < 0)
-            Debug.LogError("Level not found " + worldInitial + " " + levelInitial);
-
-        
-        if (MyPlayerConfig.GetActualScore() >= levelInitial)
+        // if scores is bigger, manage level changing
+        if (MyPlayerConfig.GetActualScore() >= levelStarAmount)
         {
-            ValuePointsText.text = (int)levelInitial + " / " + (int)levelInitial;
+            ValuePointsText.text = (int)levelStarAmount + " / " + (int)levelStarAmount;
             ValuePointsBar.DOFillAmount(1, 0.5f).OnComplete(ProcedeNextLevel);
         }
-        else
+        else // if not scores is bigger, just update the star bar
         {
-            ValuePointsText.text = (int)MyPlayerConfig.GetActualScore() + " / " + (int)levelInitial;
-            ValuePointsBar.DOFillAmount(MyPlayerConfig.GetActualScore() / (float)levelInitial, 0.5f);
+            ValuePointsText.text = (int)MyPlayerConfig.GetActualScore() + " / " + (int)levelStarAmount;
+            ValuePointsBar.DOFillAmount(MyPlayerConfig.GetActualScore() / (float)levelStarAmount, 0.5f);
+
+            //Next map
+            if (!startCall)
+            {
+                StartDelayedReplay(3);
+            }
         }
-        
     }
 
+    //After the animation of the complete star bar, change Level
     public void ProcedeNextLevel()
     {
-        int reste = (int)MyPlayerConfig.GetActualScore() - (int)levelInitial;
+        int reste = (int)MyPlayerConfig.GetActualScore() - (int)levelStarAmount;
         MyPlayerConfig.SetActualScore(0);
         ValuePointsBar.fillAmount = 0;
         MyPlayerConfig.SetActualLevel((int)MyPlayerConfig.GetActualLevel() + 1, reste);
 
         UpdatePointsUi();
+
+        //TODO ANIMATION NEW COLLECTIONS
+        Debug.Log("WOUHOUUUU A NEW CARD !!");
+        
+        StartDelayedReplay(3);
     }
 
     //Update the text in the jauge
@@ -325,5 +332,25 @@ public class GameManager : MonoBehaviour {
         //Change le Texte
         _treasureChest.GetComponentInChildren<TextMesh>().text = "+ " + _pointsdEarned;
         _treasureChest.GetComponentInChildren<TextMesh>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
+    }
+
+    // get with formula the initial amount of stars required for this world
+    private double WorldInitialStarFormula()
+    {
+        double worldInitial = _gameConfig.InitialValue;
+        if (MyPlayerConfig.ActualWorld > 1)
+            worldInitial = _gameConfig.InitialValue * (Math.Pow(1 + _gameConfig.RatioWorld, MyPlayerConfig.ActualWorld - 1));
+        return worldInitial;
+    }
+
+    // get with formula the amount of stars required for this level
+    private double LevelStarFormula()
+    {
+        double levelInit = WorldInitialStarFormula();
+        if (MyPlayerConfig.GetActualLevel() > 1)
+            levelInit = WorldInitialStarFormula() * (Math.Pow(1 + _gameConfig.RatioLevel, MyPlayerConfig.GetActualLevel() - 1));
+        else if (MyPlayerConfig.GetActualLevel() < 0)
+            Debug.LogError("Level not found " + levelInit);
+        return levelInit;
     }
 }
