@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using DG.Tweening;
 
 public class MapManager : MonoBehaviour {
 
@@ -47,6 +48,7 @@ public class MapManager : MonoBehaviour {
 
     //MapConfig
     private GameObject _mapParent;
+    private GameObject _soluceObject;
     public const float ratioTiles = 1.28f;
     #if UNITY_EDITOR
     [ReadOnly]
@@ -233,18 +235,19 @@ public class MapManager : MonoBehaviour {
         }
 
         //temporary move Camera
-        MapParent.transform.position = new Vector3(-4, 5.3f, _mapConfig.MapSize.y);
+        MapParent.transform.position = new Vector3(7, 5.3f, _mapConfig.MapSize.y);
         MapParent.transform.localScale = new Vector3(0.7f, 0.7f, 1);
 
         GenerateSoluce();
+        IntroAnimation();
         
     }
 
     public void GenerateSoluce()
     {
-        GameObject soluceObject = new GameObject();
-        soluceObject.transform.parent = transform;
-        soluceObject.name = "Solution";
+        _soluceObject = new GameObject();
+        _soluceObject.transform.parent = transform;
+        _soluceObject.name = "Solution";
 
         //create game Soluce
         int randTargetX = Random.Range(1, (int)_mapConfig.MapSize.x - 1);
@@ -253,7 +256,7 @@ public class MapManager : MonoBehaviour {
 
         //create Background
         GameObject soluceBg = (GameObject)GameObject.Instantiate(_mapBg);
-        soluceBg.transform.parent = soluceObject.transform;
+        soluceBg.transform.parent = _soluceObject.transform;
         soluceBg.name = "SoluceBg";
         soluceBg.transform.localScale = new Vector3(3, 3, 1);
         soluceBg.transform.localPosition = new Vector3(solucePosRatio.x, -solucePosRatio.y-0.1f, 1.5f);
@@ -264,7 +267,7 @@ public class MapManager : MonoBehaviour {
             for (int j = -1; j < 2; j++)
             {
                 GameObject soluceTile = (GameObject)GameObject.Instantiate(GameManager.instance.GameMap[randTargetY + i, randTargetX + j]);
-                soluceTile.transform.parent = soluceObject.transform;
+                soluceTile.transform.parent = _soluceObject.transform;
                 soluceTile.transform.localPosition = new Vector3(solucePosRatio.x + (j * ratioTiles), -solucePosRatio.y - (i * ratioTiles), 1-i/10f);
                 Destroy(soluceTile.GetComponent<BoxCollider2D>());
                 GameManager.instance.GameSoluce.Add(soluceTile);
@@ -286,12 +289,30 @@ public class MapManager : MonoBehaviour {
         GameObject soluceTarget = (GameObject)GameObject.Instantiate(TargetSoluce);
         soluceTarget.name = "Treasure location";
         soluceTarget.transform.localPosition = new Vector3(solucePosRatio.x + (randMoveX * ratioTiles), -solucePosRatio.y - 0.1f - (randMoveY * ratioTiles), 1.3f);
-        soluceTarget.transform.parent = soluceObject.transform;
+        soluceTarget.transform.parent = _soluceObject.transform;
 
 
-        soluceObject.transform.localScale = new Vector3(0.7f, 0.7f, 1);
-        soluceObject.transform.localPosition = new Vector3(0, -2f, 0);
+        _soluceObject.transform.localScale = new Vector3(0.7f, 0.7f, 1);
+        _soluceObject.transform.localPosition = new Vector3(0, -7, 0);
 
+    }
+
+    private void IntroAnimation()
+    {
+        // Intro Map
+        Sequence introAnimation = DOTween.Sequence();
+        introAnimation.Append(MapParent.transform.DOLocalMoveX(-4, 0.8f).SetEase(Ease.OutBack));
+        introAnimation.Append(_soluceObject.transform.DOLocalMoveY(-2, 0.8f).SetEase(Ease.OutBack).OnComplete(GamesReady));
+        introAnimation.AppendCallback(GamesReady);
+
+        introAnimation.Play();
+        
+    }
+
+    //Launch game
+    private void GamesReady()
+    {
+        GameManager.instance.GamesReady();
     }
 
     /*void OnGUI()

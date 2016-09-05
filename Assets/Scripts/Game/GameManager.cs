@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour {
     private Vector3 _ArrowFailPosition = new Vector3(0.9f, -1.8f, -1);
     public GameObject ArrowTimer;
     private float _timerPoint = 0;
-    private bool _isPlaying = true;
+    private bool _isPlaying = false;
     private bool _isPaused = false;
     public Image ValuePointsBar;
     public Text ValuePointsText;
@@ -257,8 +257,7 @@ public class GameManager : MonoBehaviour {
     {
         Destroy(_treasureChest);
         MapManager.instance.RebuildMap();
-        ResetTimerPoints();
-        IsPlaying = true;
+        //GamesReady();
     }
 
     //Function to reset the jauge bar points timer
@@ -352,5 +351,11 @@ public class GameManager : MonoBehaviour {
         else if (MyPlayerConfig.GetActualLevel() < 0)
             Debug.LogError("Level not found " + levelInit);
         return levelInit;
+    }
+
+    public void GamesReady()
+    {
+        ResetTimerPoints();
+        IsPlaying = true;
     }
 }

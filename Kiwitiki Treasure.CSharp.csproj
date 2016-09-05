@@ -79,11 +79,11 @@
     <Reference Include="DOTween">
       <HintPath>Assets\Plugins\DOTween\DOTween.dll</HintPath>
     </Reference>
-    <Reference Include="DOTween46">
-      <HintPath>Assets\Plugins\DOTween\DOTween46.dll</HintPath>
-    </Reference>
     <Reference Include="DOTween43">
       <HintPath>Assets\Plugins\DOTween\DOTween43.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween46">
+      <HintPath>Assets\Plugins\DOTween\DOTween46.dll</HintPath>
     </Reference>
     <Reference Include="DOTween50">
       <HintPath>Assets\Plugins\DOTween\DOTween50.dll</HintPath>
@@ -104,6 +104,7 @@
     <Compile Include="Assets\Scripts\Game\PlayerConfig.cs" />
     <Compile Include="Assets\Scripts\Game\TileSprite.cs" />
     <Compile Include="Assets\Scripts\Ui\UiManager.cs" />
+    <Compile Include="Assets\Scripts\Utility\Animation\AnimationObject.cs" />
     <Compile Include="Assets\Scripts\Utility\FloatingEffect.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttributeDrawer.cs" />
