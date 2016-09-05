@@ -105,6 +105,7 @@
     <Compile Include="Assets\Scripts\Game\TileSprite.cs" />
     <Compile Include="Assets\Scripts\Ui\UiManager.cs" />
     <Compile Include="Assets\Scripts\Utility\Animation\AnimationObject.cs" />
+    <Compile Include="Assets\Scripts\Utility\Constant.cs" />
     <Compile Include="Assets\Scripts\Utility\FloatingEffect.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttributeDrawer.cs" />

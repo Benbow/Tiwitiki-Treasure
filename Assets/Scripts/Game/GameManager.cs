@@ -157,9 +157,10 @@ public class GameManager : MonoBehaviour {
     void Start () {
         DOTween.Init();
 
+        // star bar points
+
+        UpdatePointsReward(); // points jauge rewards initilization
         MapManager.instance.GenerateMap();
-        UpdatePointsUi(true);
-        UpdatePointsReward();
     }
 	
 	// Update is called once per frame
@@ -198,6 +199,8 @@ public class GameManager : MonoBehaviour {
         {
             if (IsPlaying)
             {
+                IsPlaying = false;
+
                 //Get the points win
                 _pointsdEarned = MyGameConfig.JaugePoints[MyGameConfig.JaugePoints.Count - 1];
                 MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
@@ -213,6 +216,10 @@ public class GameManager : MonoBehaviour {
 
                 //Update the star Bar
                 UpdatePointsUi();
+
+                MapManager.instance.OutroMapAnimation();
+
+                StartDelayedReplay(3);
             }
         }
     }
@@ -224,6 +231,8 @@ public class GameManager : MonoBehaviour {
         {
             if (IsPlaying)
             {
+                IsPlaying = false;
+
                 int pointsMilestone = Mathf.CeilToInt(_timerPoint / 2f);
                 if (pointsMilestone > 6)
                     pointsMilestone = 6;
@@ -240,6 +249,10 @@ public class GameManager : MonoBehaviour {
 
                 //Update the star Bar
                 UpdatePointsUi();
+
+                MapManager.instance.OutroMapAnimation();
+
+                StartDelayedReplay(3);
             }
         }
     }
@@ -257,6 +270,7 @@ public class GameManager : MonoBehaviour {
     {
         Destroy(_treasureChest);
         MapManager.instance.RebuildMap();
+        ResetTimerPoints();
         //GamesReady();
     }
 
@@ -264,11 +278,11 @@ public class GameManager : MonoBehaviour {
     public void ResetTimerPoints()
     {
         _timerPoint = 0;
-        ArrowTimer.transform.localPosition = _ArrowStartPosition;
+        ArrowTimer.transform.DOLocalMove(_ArrowStartPosition, 0.5f).SetEase(Ease.OutCubic);
     }
 
     //Update the star bar points
-    public void UpdatePointsUi(bool startCall = false)
+    public void UpdatePointsUi()
     {   
         levelStarAmount = LevelStarFormula();
 
@@ -276,18 +290,12 @@ public class GameManager : MonoBehaviour {
         if (MyPlayerConfig.GetActualScore() >= levelStarAmount)
         {
             ValuePointsText.text = (int)levelStarAmount + " / " + (int)levelStarAmount;
-            ValuePointsBar.DOFillAmount(1, 0.5f).OnComplete(ProcedeNextLevel);
+            ValuePointsBar.DOFillAmount(1, Constant._TimerFillStarBar).OnComplete(ProcedeNextLevel);
         }
         else // if not scores is bigger, just update the star bar
         {
             ValuePointsText.text = (int)MyPlayerConfig.GetActualScore() + " / " + (int)levelStarAmount;
             ValuePointsBar.DOFillAmount(MyPlayerConfig.GetActualScore() / (float)levelStarAmount, 0.5f);
-
-            //Next map
-            if (!startCall)
-            {
-                StartDelayedReplay(3);
-            }
         }
     }
 

@@ -239,7 +239,7 @@ public class MapManager : MonoBehaviour {
         MapParent.transform.localScale = new Vector3(0.7f, 0.7f, 1);
 
         GenerateSoluce();
-        IntroAnimation();
+        IntroMapAnimation();
         
     }
 
@@ -297,23 +297,35 @@ public class MapManager : MonoBehaviour {
 
     }
 
-    private void IntroAnimation()
+    public void IntroMapAnimation()
     {
         // Intro Map
+        GameManager.instance.UpdatePointsUi();
+
         Sequence introAnimation = DOTween.Sequence();
-        introAnimation.Append(MapParent.transform.DOLocalMoveX(-4, 0.8f).SetEase(Ease.OutBack));
-        introAnimation.Append(_soluceObject.transform.DOLocalMoveY(-2, 0.8f).SetEase(Ease.OutBack).OnComplete(GamesReady));
-        introAnimation.AppendCallback(GamesReady);
+        introAnimation.AppendInterval(Constant._TimerFillStarBar);
+        introAnimation.Append(MapParent.transform.DOLocalMoveX(-4, 0.8f).SetEase(Ease.OutCubic));
+        introAnimation.Append(_soluceObject.transform.DOLocalMoveY(-2, 0.8f).SetEase(Ease.OutCubic));
+        introAnimation.AppendCallback(GameManager.instance.GamesReady);
 
         introAnimation.Play();
         
     }
 
-    //Launch game
-    private void GamesReady()
+    public void OutroMapAnimation()
     {
-        GameManager.instance.GamesReady();
+        //Outro Map
+
+        Sequence outroAnimation = DOTween.Sequence();
+        outroAnimation.AppendInterval(Constant._TimerFillStarBar+ Constant._OutroMapDelay);
+        outroAnimation.Append(MapParent.transform.DOLocalMoveX(-22f, 0.8f).SetEase(Ease.InCubic));
+        outroAnimation.Insert(Constant._TimerFillStarBar + Constant._OutroMapDelay, _soluceObject.transform.DOLocalMoveY(-22, 0.8f).SetEase(Ease.InCubic));
+
+        outroAnimation.Play();
+
     }
+
+
 
     /*void OnGUI()
     {
