@@ -7,7 +7,7 @@ public class PlayerConfig : ScriptableObject {
     [SerializeField]
     private int _actualWorld;
     [SerializeField]
-    private List<Vector3> _unlockedWorldsList;
+    private List<WorldGameData> _worldsList;
 
     public int ActualWorld
     {
@@ -22,36 +22,36 @@ public class PlayerConfig : ScriptableObject {
         }
     }
 
-    public List<Vector3> UnlockedWorldsList
+    public List<WorldGameData> WorldsList
     {
         get
         {
-            return _unlockedWorldsList;
+            return _worldsList;
         }
 
         set
         {
-            _unlockedWorldsList = value;
+            _worldsList = value;
         }
     }
 
-    public Vector3 GetActualWorldData()
+    public WorldGameData GetActualWorldData()
     {
-        foreach (Vector3 worldData in _unlockedWorldsList)
+        foreach (WorldGameData worldData in _worldsList)
         {
-            if (worldData.x == ActualWorld)
+            if (worldData.WorldId == ActualWorld)
                 return worldData;
         }
 
-        return new Vector3();
+        return null;
     }
 
     public float GetActualLevel()
     {
-        foreach (Vector3 worldData in _unlockedWorldsList)
+        foreach (WorldGameData worldData in _worldsList)
         {
-            if (worldData.x == ActualWorld)
-                return worldData.y;
+            if (worldData.WorldId == ActualWorld)
+                return worldData.ActualLevel;
         }
 
         return -1;
@@ -59,19 +59,22 @@ public class PlayerConfig : ScriptableObject {
 
     public void SetActualLevel(int level, int points = 0)
     {
-        for(int i = 0; i < UnlockedWorldsList.Count; i++)
+        for(int i = 0; i < WorldsList.Count; i++)
         {
-            if (UnlockedWorldsList[i].x == ActualWorld)
-                UnlockedWorldsList[i] = new Vector3(UnlockedWorldsList[i].x, level, points);
+            if (WorldsList[i].WorldId == ActualWorld)
+            {
+                WorldsList[i].ActualLevel = level;
+                WorldsList[i].StarBarPoints = points;
+            }
         }
     }
 
     public float GetActualScore()
     {
-        foreach (Vector3 worldData in _unlockedWorldsList)
+        foreach (WorldGameData worldData in _worldsList)
         {
-            if (worldData.x == ActualWorld)
-                return worldData.z;
+            if (worldData.WorldId == ActualWorld)
+                return worldData.StarBarPoints;
         }
 
         return -1;
@@ -79,12 +82,55 @@ public class PlayerConfig : ScriptableObject {
 
     public void SetActualScore(int points)
     {
-        for (int i = 0; i < UnlockedWorldsList.Count; i++)
+        for (int i = 0; i < WorldsList.Count; i++)
         {
-            if (UnlockedWorldsList[i].x == ActualWorld)
-                UnlockedWorldsList[i] = new Vector3(UnlockedWorldsList[i].x, UnlockedWorldsList[i].y, points);
+            if (WorldsList[i].WorldId == ActualWorld)
+                WorldsList[i].StarBarPoints = points;
         }
     }
+
+    public void SetActualAttemps(int actual)
+    {
+        for (int i = 0; i < WorldsList.Count; i++)
+        {
+            if (WorldsList[i].WorldId == ActualWorld)
+                WorldsList[i].AttemptsActual = actual;
+        }
+    }
+
+    public int GetActualAttempts()
+    {
+        foreach (WorldGameData worldData in _worldsList)
+        {
+            if (worldData.WorldId == ActualWorld)
+                return worldData.AttemptsActual;
+        }
+
+        return -1;
+    }
+
+    public void SetMaxAddAttemps(int addMax)
+    {
+        for (int i = 0; i < WorldsList.Count; i++)
+        {
+            if (WorldsList[i].WorldId == ActualWorld)
+                WorldsList[i].AttemptsMaxAdder = addMax;
+        }
+    }
+
+    public int GetMaxAddAttempts()
+    {
+        foreach (WorldGameData worldData in _worldsList)
+        {
+            if (worldData.WorldId == ActualWorld)
+                return worldData.AttemptsMaxAdder;
+        }
+
+        return -1;
+    }
+
+
+
 
     // Use this for initialization
     void Start () {

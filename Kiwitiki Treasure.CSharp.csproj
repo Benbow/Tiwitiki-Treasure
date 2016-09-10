@@ -96,13 +96,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Game\CollectionItemData.cs" />
     <Compile Include="Assets\Scripts\Game\GameConfig.cs" />
     <Compile Include="Assets\Scripts\Game\GameManager.cs" />
     <Compile Include="Assets\Scripts\Game\MapConfig.cs" />
     <Compile Include="Assets\Scripts\Game\MapManager.cs" />
+    <Compile Include="Assets\Scripts\Game\NewCollecItem.cs" />
     <Compile Include="Assets\Scripts\Game\Pause.cs" />
     <Compile Include="Assets\Scripts\Game\PlayerConfig.cs" />
     <Compile Include="Assets\Scripts\Game\TileSprite.cs" />
+    <Compile Include="Assets\Scripts\Game\WorldGameData.cs" />
     <Compile Include="Assets\Scripts\Ui\UiManager.cs" />
     <Compile Include="Assets\Scripts\Utility\Animation\AnimationObject.cs" />
     <Compile Include="Assets\Scripts\Utility\Constant.cs" />

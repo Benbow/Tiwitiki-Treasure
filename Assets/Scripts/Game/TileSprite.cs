@@ -50,14 +50,8 @@ public class TileSprite : MonoBehaviour
 
     public void OnMouseDown()
     {
-        if (GameManager.instance.SoluceMapPos == this.TileCoord)
-        {
-            GameManager.instance.Found(this.gameObject);
-        }
-        else
-        {
-            GameManager.instance.Fail(this.gameObject);
-        }
+        Debug.Log("Sprite Mouse Down");
+        GameManager.instance.OnTileCliked(this);
     }
 
 }

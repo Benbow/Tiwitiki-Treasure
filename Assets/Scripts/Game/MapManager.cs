@@ -164,7 +164,7 @@ public class MapManager : MonoBehaviour {
             {
                 int rand = Random.Range(0, shuffleBagSprites.Count);
                 GameObject newTiles = (GameObject)GameObject.Instantiate(shuffleBagSprites[rand]);
-                newTiles.transform.position = new Vector3(j * ratioTiles, i * (-ratioTiles), -i);
+                newTiles.transform.position = new Vector3(j * ratioTiles, i * (-ratioTiles), -i*0.1f);
                 newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i, j);
                 newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
                 newTiles.transform.parent = MapParent.transform;
@@ -223,7 +223,7 @@ public class MapManager : MonoBehaviour {
                                 newTiles.GetComponent<TileSprite>().TileType = Tiles.Big;
                                 break;
                         }
-                        newTiles.transform.position = new Vector3((j + randX) * ratioTiles, (i + randY) * (-ratioTiles), -i);
+                        newTiles.transform.position = new Vector3((j + randX) * ratioTiles, (i + randY) * (-ratioTiles), -i*0.1f);
                         newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i + randY, j + randX);
                         newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
                         newTiles.transform.parent = MapParent.transform;
@@ -235,7 +235,7 @@ public class MapManager : MonoBehaviour {
         }
 
         //temporary move Camera
-        MapParent.transform.position = new Vector3(7, 5.3f, _mapConfig.MapSize.y);
+        MapParent.transform.position = new Vector3(7, 5.3f, _mapConfig.MapSize.y*4);
         MapParent.transform.localScale = new Vector3(0.7f, 0.7f, 1);
 
         GenerateSoluce();
@@ -293,7 +293,7 @@ public class MapManager : MonoBehaviour {
 
 
         _soluceObject.transform.localScale = new Vector3(0.7f, 0.7f, 1);
-        _soluceObject.transform.localPosition = new Vector3(0, -7, 0);
+        _soluceObject.transform.localPosition = new Vector3(0, -7, 40);
 
     }
 

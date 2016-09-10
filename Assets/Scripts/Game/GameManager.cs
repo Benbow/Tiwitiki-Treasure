@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour {
     private const float _DistanceTimer = 2.75f;
     private const float _SpeedTimer = 0.180f;
     private Vector3 _ArrowStartPosition = new Vector3(0.9f, 1.75f, -1);
-   // private Vector3 _ArrowStopPosition = new Vector3(0.9f, -1.3f, -1);
+    // private Vector3 _ArrowStopPosition = new Vector3(0.9f, -1.3f, -1);
     private Vector3 _ArrowFailPosition = new Vector3(0.9f, -1.8f, -1);
     public GameObject ArrowTimer;
     private float _timerPoint = 0;
@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour {
     public Image ValuePointsBar;
     public Text ValuePointsText;
     public GameObject TextPoints;
+    public GameObject TextAttempts;
+    public GameObject NewIllusPopup;
 
     // Temporary Point gesture
     private int _pointsdEarned = 0;
@@ -56,6 +58,7 @@ public class GameManager : MonoBehaviour {
     private float _timerReplay = -1;
     private float _timerReplayDelay = 0;
     private GameObject _treasureChest;
+    private bool _reachNewLevel;
 
     public GameObject[,] GameMap
     {
@@ -154,17 +157,17 @@ public class GameManager : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         DOTween.Init();
 
         // star bar points
-
+        UpdateAttempts();
         UpdatePointsReward(); // points jauge rewards initilization
         MapManager.instance.GenerateMap();
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
         if (!IsPaused)
         {
@@ -190,71 +193,78 @@ public class GameManager : MonoBehaviour {
                 }
             }
         }
-	}
+    }
 
-    //Called if the tile clicked is the wrong one
-    public void Fail(GameObject tile)
+    //Click tile function
+    public void OnTileCliked(TileSprite tile)
     {
         if (!IsPaused)
         {
             if (IsPlaying)
             {
                 IsPlaying = false;
+                MyPlayerConfig.SetActualAttemps(MyPlayerConfig.GetActualAttempts() - 1);
+                UpdateAttempts();
 
-                //Get the points win
-                _pointsdEarned = MyGameConfig.JaugePoints[MyGameConfig.JaugePoints.Count - 1];
-                MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
-
-                //change le sprite de la case
-                tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.LoseSprite;
-
-                //Animation Chest appear
-                ChestAppear(tile, MyGameConfig.JaugePoints.Count, false);
-
-
-                ArrowTimer.transform.localPosition = _ArrowFailPosition;
+                if (SoluceMapPos == tile.TileCoord)
+                {
+                    Found(tile.gameObject);
+                }
+                else
+                {
+                    Fail(tile.gameObject);
+                }
 
                 //Update the star Bar
                 UpdatePointsUi();
 
-                MapManager.instance.OutroMapAnimation();
+                if(!_reachNewLevel)
+                    MapManager.instance.OutroMapAnimation();
 
-                StartDelayedReplay(3);
+                if (!_reachNewLevel && MyPlayerConfig.GetActualAttempts() > 0)
+                    StartDelayedReplay(3);
+                else if (!_reachNewLevel && MyPlayerConfig.GetActualAttempts() <= 0)
+                {
+                    //Lose Attempts gesture
+                }
             }
         }
+    }
+
+
+    //Called if the tile clicked is the wrong one
+    public void Fail(GameObject tile)
+    {
+        //Get the points win
+        _pointsdEarned = MyGameConfig.JaugePoints[MyGameConfig.JaugePoints.Count - 1];
+        MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
+
+        //change le sprite de la case
+        tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.LoseSprite;
+
+        //Animation Chest appear
+        ChestAppear(tile, MyGameConfig.JaugePoints.Count, false);
+
+
+        ArrowTimer.transform.localPosition = _ArrowFailPosition;
     }
 
     //Called when the tile cliked is the good one
     public void Found(GameObject tile)
     {
-        if (!IsPaused)
-        {
-            if (IsPlaying)
-            {
-                IsPlaying = false;
+        int pointsMilestone = Mathf.CeilToInt(_timerPoint / 2f);
+        if (pointsMilestone > 6)
+            pointsMilestone = 6;
 
-                int pointsMilestone = Mathf.CeilToInt(_timerPoint / 2f);
-                if (pointsMilestone > 6)
-                    pointsMilestone = 6;
+        //Get the points win
+        _pointsdEarned = MyGameConfig.JaugePoints[pointsMilestone - 1];
+        MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
+        // Change le sprite de la tile
+        tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
+        tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
 
-                //Get the points win
-                _pointsdEarned = MyGameConfig.JaugePoints[pointsMilestone - 1];
-                MyPlayerConfig.SetActualScore((int)MyPlayerConfig.GetActualScore() + _pointsdEarned);
-                // Change le sprite de la tile
-                tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
-                tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
-
-                //Animation Chest appear
-                ChestAppear(tile, pointsMilestone, true);
-
-                //Update the star Bar
-                UpdatePointsUi();
-
-                MapManager.instance.OutroMapAnimation();
-
-                StartDelayedReplay(3);
-            }
-        }
+        //Animation Chest appear
+        ChestAppear(tile, pointsMilestone, true);
     }
 
     //Function to restart a new map, with a potential delay
@@ -283,12 +293,13 @@ public class GameManager : MonoBehaviour {
 
     //Update the star bar points
     public void UpdatePointsUi()
-    {   
+    {
         levelStarAmount = LevelStarFormula();
 
         // if scores is bigger, manage level changing
         if (MyPlayerConfig.GetActualScore() >= levelStarAmount)
         {
+            _reachNewLevel = true;
             ValuePointsText.text = (int)levelStarAmount + " / " + (int)levelStarAmount;
             ValuePointsBar.DOFillAmount(1, Constant._TimerFillStarBar).OnComplete(ProcedeNextLevel);
         }
@@ -299,20 +310,34 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+
+    //Manage Attempts text and save
+    public void UpdateAttempts()
+    {
+        int actualAttempts = MyPlayerConfig.GetActualAttempts();
+        int maxAttempts = MyPlayerConfig.GetMaxAddAttempts() + MapManager.instance.MapConfigs.maxAttemptsBase;
+
+        TextAttempts.GetComponent<Text>().text = actualAttempts + " / " + maxAttempts;
+    } 
+
     //After the animation of the complete star bar, change Level
     public void ProcedeNextLevel()
     {
-        int reste = (int)MyPlayerConfig.GetActualScore() - (int)levelStarAmount;
+        
+        NewCollectPopup();
+
+
+        /*int reste = (int)MyPlayerConfig.GetActualScore() - (int)levelStarAmount;
         MyPlayerConfig.SetActualScore(0);
         ValuePointsBar.fillAmount = 0;
-        MyPlayerConfig.SetActualLevel((int)MyPlayerConfig.GetActualLevel() + 1, reste);
+        MyPlayerConfig.SetActualLevel((int)MyPlayerConfig.GetActualLevel() + 1, reste);*/
 
-        UpdatePointsUi();
+        //UpdatePointsUi();
 
         //TODO ANIMATION NEW COLLECTIONS
         Debug.Log("WOUHOUUUU A NEW CARD !!");
         
-        StartDelayedReplay(3);
+        //StartDelayedReplay(3);
     }
 
     //Update the text in the jauge
@@ -359,6 +384,55 @@ public class GameManager : MonoBehaviour {
         else if (MyPlayerConfig.GetActualLevel() < 0)
             Debug.LogError("Level not found " + levelInit);
         return levelInit;
+    }
+
+    //Choose a new illus and appear popup !
+    public void NewCollectPopup()
+    {
+        NewIllusPopup.GetComponent<BoxCollider>().enabled = true;
+        Image bg = NewIllusPopup.GetComponent<Image>();
+        SpriteRenderer cardBack = NewIllusPopup.GetComponentsInChildren<SpriteRenderer>()[0];
+        cardBack.sprite = cardBack.GetComponent<NewCollecItem>().SpriteBack;
+        cardBack.GetComponent<NewCollecItem>().Illus.DOFade(0, 0);
+
+
+        Sequence collectPopup = DOTween.Sequence();
+        collectPopup.Append(bg.DOFade(0.55f,0.3f).SetEase(Ease.OutCirc));
+        collectPopup.AppendInterval(0.3f);
+        collectPopup.Append(cardBack.transform.DOLocalMoveY(3f, 1.5f));
+        collectPopup.Insert(0.65f, cardBack.transform.DOLocalRotate(new Vector3(0,3600, 0), 2f, RotateMode.FastBeyond360).SetEase(Ease.OutQuint));
+
+        collectPopup.Play();
+    }
+
+    //launch the game again after removing the popup
+    public void ContinueAftertPopupAnim()
+    {
+        // Remove Popup
+        NewIllusPopup.GetComponent<BoxCollider>().enabled = false;
+        Image bg = NewIllusPopup.GetComponent<Image>();
+        SpriteRenderer cardBack = NewIllusPopup.GetComponentsInChildren<SpriteRenderer>()[0];
+
+        Sequence collectPopup = DOTween.Sequence();
+        collectPopup.Append(cardBack.transform.DOLocalMoveY(-24f, 0.5f).SetEase(Ease.InCubic));
+        collectPopup.AppendInterval(0.3f);
+        collectPopup.Append(bg.DOFade(0, 0.3f).SetEase(Ease.InCirc));
+        collectPopup.AppendCallback(ReplayAfterPopup);
+
+        collectPopup.Play();
+    }
+
+    public void ReplayAfterPopup()
+    {
+        //Modify playing variable
+        _reachNewLevel = false;
+        int reste = (int)MyPlayerConfig.GetActualScore() - (int)levelStarAmount;
+        MyPlayerConfig.SetActualScore(0);
+        ValuePointsBar.fillAmount = 0;
+        MyPlayerConfig.SetActualLevel((int)MyPlayerConfig.GetActualLevel() + 1, reste);
+        UpdatePointsUi();
+        MapManager.instance.OutroMapAnimation();
+        StartDelayedReplay(3);
     }
 
     public void GamesReady()

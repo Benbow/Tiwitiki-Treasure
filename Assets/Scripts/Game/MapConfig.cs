@@ -23,6 +23,7 @@ public class MapConfig : ScriptableObject
     public int percentageMedium;
     [Range(0, 100)]
     public int percentageBig;
+    public int maxAttemptsBase;
 
     public bool CentralTreasureLocation = true;
 
