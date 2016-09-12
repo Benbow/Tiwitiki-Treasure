@@ -6,6 +6,8 @@ public class WorldGameData {
     [SerializeField]
     private int _worldId;
     [SerializeField]
+    private string _worldName;
+    [SerializeField]
     private bool _isUnlocked = false;
     [SerializeField]
     private int _starBarPoints = 0;
@@ -15,6 +17,10 @@ public class WorldGameData {
     private int _attemptsMaxAdder = 0;
     [SerializeField]
     private int _attemptsActual = 0;
+    [SerializeField]
+    private int _layersCount = 1;
+    [SerializeField]
+    private MapConfig _mapConfig;
     [SerializeField]
     private List<CollectionItemData> _collections = new List<CollectionItemData>();
 
@@ -106,6 +112,45 @@ public class WorldGameData {
         set
         {
             _isUnlocked = value;
+        }
+    }
+
+    public string WorldName
+    {
+        get
+        {
+            return _worldName;
+        }
+
+        set
+        {
+            _worldName = value;
+        }
+    }
+
+    public MapConfig MapConfig
+    {
+        get
+        {
+            return _mapConfig;
+        }
+
+        set
+        {
+            _mapConfig = value;
+        }
+    }
+
+    public int LayersCount
+    {
+        get
+        {
+            return _layersCount;
+        }
+
+        set
+        {
+            _layersCount = value;
         }
     }
 }

@@ -99,6 +99,9 @@
     <Compile Include="Assets\Scripts\Game\CollectionItemData.cs" />
     <Compile Include="Assets\Scripts\Game\GameConfig.cs" />
     <Compile Include="Assets\Scripts\Game\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Game\GlobalManager.cs" />
+    <Compile Include="Assets\Scripts\Game\ItemPlacementData.cs" />
+    <Compile Include="Assets\Scripts\Game\LocalManager.cs" />
     <Compile Include="Assets\Scripts\Game\MapConfig.cs" />
     <Compile Include="Assets\Scripts\Game\MapManager.cs" />
     <Compile Include="Assets\Scripts\Game\NewCollecItem.cs" />
@@ -106,12 +109,14 @@
     <Compile Include="Assets\Scripts\Game\PlayerConfig.cs" />
     <Compile Include="Assets\Scripts\Game\TileSprite.cs" />
     <Compile Include="Assets\Scripts\Game\WorldGameData.cs" />
+    <Compile Include="Assets\Scripts\Game\WorldScreenManager.cs" />
     <Compile Include="Assets\Scripts\Ui\UiManager.cs" />
     <Compile Include="Assets\Scripts\Utility\Animation\AnimationObject.cs" />
     <Compile Include="Assets\Scripts\Utility\Constant.cs" />
     <Compile Include="Assets\Scripts\Utility\FloatingEffect.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttributeDrawer.cs" />
+    <Compile Include="Assets\Scripts\Utility\ScrollSnapRect.cs" />
     <Compile Include="Assets\Scripts\Utility\Tiles.cs" />
   </ItemGroup>
   <ItemGroup>

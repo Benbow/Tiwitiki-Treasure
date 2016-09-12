@@ -50,7 +50,6 @@ public class TileSprite : MonoBehaviour
 
     public void OnMouseDown()
     {
-        Debug.Log("Sprite Mouse Down");
         GameManager.instance.OnTileCliked(this);
     }
 

@@ -2,6 +2,7 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class NewCollecItem : MonoBehaviour
 {
@@ -22,8 +23,6 @@ public class NewCollecItem : MonoBehaviour
 
     public void OnMouseDown()
     {
-        Debug.Log("Sprite Mouse Down");
-
         //first, choose the sprite
         List<CollectionItemData> actualCollection = GameManager.instance.MyPlayerConfig.GetActualWorldData().Collections;
         _selectedItem = actualCollection[Random.Range(0, actualCollection.Count)];
@@ -40,24 +39,32 @@ public class NewCollecItem : MonoBehaviour
         {
             TitleText.text = "Duplicata : " + _selectedItem.Name;
             ButtonText.text = "Continue";
-            Debug.Log("Well, you already have it !");
+            WorldGameData data = GameManager.instance.MyPlayerConfig.GetActualWorldData();
+            data.AttemptsActual = data.AttemptsMaxAdder + data.MapConfig.maxAttemptsBase;
         }
         else
         {
-            _selectedItem.Owned = true;
             TitleText.text = "NEW Card : " + _selectedItem.Name;
-            Debug.Log("HURRAY ! A NEW ONE !");
-            ButtonText.text = "Add (for now, continue)";
+            ButtonText.text = "Add";
+
+            WorldGameData data = GameManager.instance.MyPlayerConfig.GetActualWorldData();
+            data.AttemptsMaxAdder += 1;
         }
 
         MyButton.image.DOFade(1f, 0.6f);
         ButtonText.DOFade(1f, 0.6f);
         TitleText.DOFade(1f, 0.6f);
-
     }
 
     public void ButtonClick()
     {
+        if (!_selectedItem.Owned)
+        {
+            _selectedItem.Owned = true;
+            GameManager.instance.AfterPopupReady(false);
+            SceneManager.LoadScene(0);
+        }
+
         MyButton.image.DOFade(0f, 0.6f);
         ButtonText.DOFade(0f, 0.6f);
         TitleText.DOFade(0f, 0.6f).OnComplete(GameManager.instance.ContinueAftertPopupAnim);

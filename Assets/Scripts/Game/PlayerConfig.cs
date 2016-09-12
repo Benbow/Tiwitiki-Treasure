@@ -46,6 +46,18 @@ public class PlayerConfig : ScriptableObject {
         return null;
     }
 
+    public WorldGameData GetWorldDataById(int worldId)
+    {
+        foreach (WorldGameData worldData in _worldsList)
+        {
+            if (worldData.WorldId == worldId)
+                return worldData;
+        }
+
+        return null;
+    }
+
+
     public float GetActualLevel()
     {
         foreach (WorldGameData worldData in _worldsList)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class CollectionItemData {
@@ -12,7 +13,9 @@ public class CollectionItemData {
     [SerializeField]
     private bool _owned = false;
     [SerializeField]
-    private Vector3 _position;
+    private bool _new = true;
+    [SerializeField]
+    private List<ItemPlacementData> _placement = new List<ItemPlacementData>();
     [SerializeField]
     private string _name;
 
@@ -68,16 +71,16 @@ public class CollectionItemData {
         }
     }
 
-    public Vector3 Position
+    public List<ItemPlacementData> PlacementData
     {
         get
         {
-            return _position;
+            return _placement;
         }
 
         set
         {
-            _position = value;
+            _placement = value;
         }
     }
 
@@ -91,6 +94,19 @@ public class CollectionItemData {
         set
         {
             _name = value;
+        }
+    }
+
+    public bool IsNew
+    {
+        get
+        {
+            return _new;
+        }
+
+        set
+        {
+            _new = value;
         }
     }
 }

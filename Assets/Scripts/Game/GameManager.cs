@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using DG.Tweening;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -160,6 +161,8 @@ public class GameManager : MonoBehaviour {
     void Start() {
         DOTween.Init();
 
+        MyPlayerConfig = GlobalManager.instance.PlayerConf;
+
         // star bar points
         UpdateAttempts();
         UpdatePointsReward(); // points jauge rewards initilization
@@ -225,6 +228,7 @@ public class GameManager : MonoBehaviour {
                     StartDelayedReplay(3);
                 else if (!_reachNewLevel && MyPlayerConfig.GetActualAttempts() <= 0)
                 {
+                    SceneManager.LoadScene(0);
                     //Lose Attempts gesture
                 }
             }
@@ -335,7 +339,6 @@ public class GameManager : MonoBehaviour {
         //UpdatePointsUi();
 
         //TODO ANIMATION NEW COLLECTIONS
-        Debug.Log("WOUHOUUUU A NEW CARD !!");
         
         //StartDelayedReplay(3);
     }
@@ -355,7 +358,7 @@ public class GameManager : MonoBehaviour {
     {
         //Apparait le coffre
         _treasureChest = (GameObject)GameObject.Instantiate(MapManager.instance.MapConfigs.TreasureChest);
-        _treasureChest.transform.parent = MapManager.instance.MapParent.transform;
+        _treasureChest.transform.SetParent(MapManager.instance.MapParent.transform);
         _treasureChest.transform.localPosition = tile.transform.localPosition;
         if (!isChestVisible)
         {
@@ -416,13 +419,13 @@ public class GameManager : MonoBehaviour {
         Sequence collectPopup = DOTween.Sequence();
         collectPopup.Append(cardBack.transform.DOLocalMoveY(-24f, 0.5f).SetEase(Ease.InCubic));
         collectPopup.AppendInterval(0.3f);
-        collectPopup.Append(bg.DOFade(0, 0.3f).SetEase(Ease.InCirc));
-        collectPopup.AppendCallback(ReplayAfterPopup);
+        collectPopup.Append(bg.DOFade(0, 0.3f).SetEase(Ease.InCirc)).OnComplete(() => AfterPopupReady(true));
+        //collectPopup.AppendCallback(AfterPopupReady);
 
         collectPopup.Play();
     }
 
-    public void ReplayAfterPopup()
+    public void AfterPopupReady(bool replay = true)
     {
         //Modify playing variable
         _reachNewLevel = false;
@@ -430,9 +433,11 @@ public class GameManager : MonoBehaviour {
         MyPlayerConfig.SetActualScore(0);
         ValuePointsBar.fillAmount = 0;
         MyPlayerConfig.SetActualLevel((int)MyPlayerConfig.GetActualLevel() + 1, reste);
-        UpdatePointsUi();
-        MapManager.instance.OutroMapAnimation();
-        StartDelayedReplay(3);
+        if (replay) {
+            UpdatePointsUi();
+            MapManager.instance.OutroMapAnimation();
+            StartDelayedReplay(3);
+        }
     }
 
     public void GamesReady()

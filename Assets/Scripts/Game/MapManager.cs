@@ -77,6 +77,7 @@ public class MapManager : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        MapConfigs = GlobalManager.instance.PlayerConf.GetActualWorldData().MapConfig;
 	}
 	
 	// Update is called once per frame
@@ -88,7 +89,7 @@ public class MapManager : MonoBehaviour {
     {
         //Map, GameObject who contain all the map
        MapParent = new GameObject();
-        MapParent.transform.parent = transform;
+        MapParent.transform.SetParent(transform);
         MapParent.name = "Map";
 
         //Array that contains all the map tile
@@ -167,7 +168,7 @@ public class MapManager : MonoBehaviour {
                 newTiles.transform.position = new Vector3(j * ratioTiles, i * (-ratioTiles), -i*0.1f);
                 newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i, j);
                 newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
-                newTiles.transform.parent = MapParent.transform;
+                newTiles.transform.SetParent(MapParent.transform);
                 GameManager.instance.GameMap[i, j] = newTiles;
                 shuffleBagSprites.RemoveAt(rand);
             }
@@ -179,7 +180,7 @@ public class MapManager : MonoBehaviour {
         newBg.transform.position = new Vector3(_mapConfig.MapSize.x/2f + ratioTiles/2f, -_mapConfig.MapSize.y/2f - ratioTiles/2f, _mapConfig.MapSize.x);
         newBg.transform.localScale = new Vector3(11, 11, 1);
         newBg.name = "Background";
-        newBg.transform.parent = MapParent.transform;
+        newBg.transform.SetParent(MapParent.transform);
 
 
         //verifier les carres vides et les supprimer
@@ -197,9 +198,7 @@ public class MapManager : MonoBehaviour {
                     GameManager.instance.GameMap[j, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty &&
                     GameManager.instance.GameMap[j + 1, i + 1].GetComponent<TileSprite>().TileType == Tiles.Empty)
                 {
-                    Debug.Log("TEST");
                     int randNumberModif = Random.Range(1, 4);
-                    Debug.Log("Number modif = " + randNumberModif);
                     for (int number = 1; number <= randNumberModif; number++)
                     {
                         int randX = Random.Range(-1, 2);
@@ -226,9 +225,8 @@ public class MapManager : MonoBehaviour {
                         newTiles.transform.position = new Vector3((j + randX) * ratioTiles, (i + randY) * (-ratioTiles), -i*0.1f);
                         newTiles.GetComponent<TileSprite>().TileCoord = new Vector2(i + randY, j + randX);
                         newTiles.name = i + "x" + j + " " + newTiles.GetComponent<TileSprite>().TileType;
-                        newTiles.transform.parent = MapParent.transform;
+                        newTiles.transform.SetParent(MapParent.transform);
                         GameManager.instance.GameMap[i + randY, j + randX] = newTiles;
-                        Debug.Log("X = " + (i + randY) + "| Y = " + (j + randX) + "| Type = " + newTiles.GetComponent<TileSprite>().TileType);
                     }
                 }
             }
@@ -246,7 +244,7 @@ public class MapManager : MonoBehaviour {
     public void GenerateSoluce()
     {
         _soluceObject = new GameObject();
-        _soluceObject.transform.parent = transform;
+        _soluceObject.transform.SetParent(transform);
         _soluceObject.name = "Solution";
 
         //create game Soluce
@@ -256,7 +254,7 @@ public class MapManager : MonoBehaviour {
 
         //create Background
         GameObject soluceBg = (GameObject)GameObject.Instantiate(_mapBg);
-        soluceBg.transform.parent = _soluceObject.transform;
+        soluceBg.transform.SetParent(_soluceObject.transform);
         soluceBg.name = "SoluceBg";
         soluceBg.transform.localScale = new Vector3(3, 3, 1);
         soluceBg.transform.localPosition = new Vector3(solucePosRatio.x, -solucePosRatio.y-0.1f, 1.5f);
@@ -267,7 +265,7 @@ public class MapManager : MonoBehaviour {
             for (int j = -1; j < 2; j++)
             {
                 GameObject soluceTile = (GameObject)GameObject.Instantiate(GameManager.instance.GameMap[randTargetY + i, randTargetX + j]);
-                soluceTile.transform.parent = _soluceObject.transform;
+                soluceTile.transform.SetParent(_soluceObject.transform);
                 soluceTile.transform.localPosition = new Vector3(solucePosRatio.x + (j * ratioTiles), -solucePosRatio.y - (i * ratioTiles), 1-i/10f);
                 Destroy(soluceTile.GetComponent<BoxCollider2D>());
                 GameManager.instance.GameSoluce.Add(soluceTile);
@@ -289,7 +287,7 @@ public class MapManager : MonoBehaviour {
         GameObject soluceTarget = (GameObject)GameObject.Instantiate(TargetSoluce);
         soluceTarget.name = "Treasure location";
         soluceTarget.transform.localPosition = new Vector3(solucePosRatio.x + (randMoveX * ratioTiles), -solucePosRatio.y - 0.1f - (randMoveY * ratioTiles), 1.3f);
-        soluceTarget.transform.parent = _soluceObject.transform;
+        soluceTarget.transform.SetParent(_soluceObject.transform);
 
 
         _soluceObject.transform.localScale = new Vector3(0.7f, 0.7f, 1);
