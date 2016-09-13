@@ -11,6 +11,8 @@ public class LocalManager : MonoBehaviour {
     public GameObject Ui;
     public SpriteRenderer FrontScreen;
     public GameObject PlayButton;
+    public Image WorldCompletionBar;
+    public Text WorldCompletionText;
 
     public static LocalManager instance;
 
@@ -38,7 +40,7 @@ public class LocalManager : MonoBehaviour {
         DOTween.Init();
         ScrollSnapReference.startingPage = GlobalManager.instance.PlayerConf.ActualWorld - 1;
         WorldNameReference.text = GlobalManager.instance.PlayerConf.GetActualWorldData().WorldName;
-
+        UpdateWorldCompletion();
         Charged();
     }
 	
@@ -80,6 +82,7 @@ public class LocalManager : MonoBehaviour {
             PlayButton.GetComponent<Button>().enabled = false;
             PlayButton.GetComponentInChildren<Text>().text = " ";
         }
+        UpdateWorldCompletion();
     }
 
     public void Play()
@@ -87,5 +90,22 @@ public class LocalManager : MonoBehaviour {
         WorldGameData data = GlobalManager.instance.PlayerConf.GetActualWorldData();
         data.AttemptsActual = data.AttemptsMaxAdder + data.MapConfig.maxAttemptsBase;
         SceneManager.LoadScene(1);
+    }
+
+    public void UpdateWorldCompletion()
+    {
+       
+        if (GlobalManager.instance.PlayerConf.GetActualWorldData() != null)
+        {
+            float value = GlobalManager.instance.PlayerConf.GetActualWorldData().GetPercentageCollection();
+            //if(value != )
+            WorldCompletionBar.DOFillAmount(GlobalManager.instance.PlayerConf.GetActualWorldData().GetPercentageCollection(), 0.5f);
+            WorldCompletionText.text = Mathf.Floor(GlobalManager.instance.PlayerConf.GetActualWorldData().GetPercentageCollection() * 100f) + "% Completed";
+        }
+        else
+        {
+            WorldCompletionBar.DOFillAmount(0, 0.5f);
+            WorldCompletionText.text = 0 + "% Completed";
+        }
     }
 }

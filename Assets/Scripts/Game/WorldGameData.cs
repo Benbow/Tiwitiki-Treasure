@@ -153,4 +153,18 @@ public class WorldGameData {
             _layersCount = value;
         }
     }
+
+    public float GetPercentageCollection()
+    {
+        float count = 0;
+        foreach (CollectionItemData item in Collections)
+        {
+            if (item.Owned)
+                count++;
+        }
+        if(Collections.Count != 0)
+            return count / (float)Collections.Count;
+
+        return 0;
+    }
 }
