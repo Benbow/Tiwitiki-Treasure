@@ -15,22 +15,27 @@ public class NewCollecItem : MonoBehaviour
     public ParticleSystem Particles;
     private CollectionItemData _selectedItem;
 
+    private bool _isCliked;
+
     public void Start()
     {
         SpriteBack = GetComponent<SpriteRenderer>().sprite;
-        //MyButton.onClick += ButtonClick;
     }
 
     public void OnMouseDown()
     {
-        //first, choose the sprite
-        List<CollectionItemData> actualCollection = GameManager.instance.MyPlayerConfig.GetActualWorldData().Collections;
-        _selectedItem = actualCollection[Random.Range(0, actualCollection.Count)];
-        Illus.sprite = _selectedItem.CollectionSprite;
+        if (!_isCliked)
+        {
+            _isCliked = true;
+            //first, choose the sprite
+            List<CollectionItemData> actualCollection = GameManager.instance.MyPlayerConfig.GetActualWorldData().Collections;
+            _selectedItem = actualCollection[Random.Range(0, actualCollection.Count)];
+            Illus.sprite = _selectedItem.CollectionSprite;
 
-        GetComponent<SpriteRenderer>().sprite = SpriteFront;
-        Particles.Play();
-        Illus.DOFade(1, 1.5f).OnComplete(ItemAppear);
+            GetComponent<SpriteRenderer>().sprite = SpriteFront;
+            Particles.Play();
+            Illus.DOFade(1, 1.5f).OnComplete(ItemAppear);
+        }
     }
 
     public void ItemAppear()
@@ -67,7 +72,13 @@ public class NewCollecItem : MonoBehaviour
 
         MyButton.image.DOFade(0f, 0.6f);
         ButtonText.DOFade(0f, 0.6f);
-        TitleText.DOFade(0f, 0.6f).OnComplete(GameManager.instance.ContinueAftertPopupAnim);
+        TitleText.DOFade(0f, 0.6f).OnComplete(Activate);
+    }
+
+    public void Activate()
+    {
+        _isCliked = false;
+        GameManager.instance.ContinueAftertPopupAnim();
     }
 
 

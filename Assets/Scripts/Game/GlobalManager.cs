@@ -23,6 +23,11 @@ public class GlobalManager : MonoBehaviour {
 
     void Awake()
     {
+        // Set framerate
+
+        QualitySettings.vSyncCount = 0;
+        TargetFrameRate(30); // NOTES : Keep this number at 30 max to avoid the phone over heating during game sessions
+
         instance = this;
         DontDestroyOnLoad(transform.gameObject);
     }
@@ -37,4 +42,12 @@ public class GlobalManager : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    public void TargetFrameRate(int customFps)
+    {
+        // Make the game run at the specified fps
+        if (Application.targetFrameRate != customFps)
+            Application.targetFrameRate = customFps;
+    }
+
 }

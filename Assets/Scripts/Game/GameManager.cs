@@ -37,8 +37,8 @@ public class GameManager : MonoBehaviour {
 
     // Timer Points gesture
     private const float _DistanceTimer = 2.75f;
-    private const float _SpeedTimer = 0.180f;
-    private Vector3 _ArrowStartPosition = new Vector3(0.9f, 1.75f, -1);
+    private const float _SpeedTimer = 0.18f;
+    private Vector3 _ArrowStartPosition = new Vector3(0.9f, 1.78f, -1);
     // private Vector3 _ArrowStopPosition = new Vector3(0.9f, -1.3f, -1);
     private Vector3 _ArrowFailPosition = new Vector3(0.9f, -1.8f, -1);
     public GameObject ArrowTimer;
@@ -292,7 +292,8 @@ public class GameManager : MonoBehaviour {
     public void ResetTimerPoints()
     {
         _timerPoint = 0;
-        ArrowTimer.transform.DOLocalMove(_ArrowStartPosition, 0.5f).SetEase(Ease.OutCubic);
+        if(ArrowTimer.transform.localPosition != _ArrowStartPosition)
+            ArrowTimer.transform.DOLocalMove(_ArrowStartPosition, 0.3f).SetEase(Ease.OutCubic);
     }
 
     //Update the star bar points
