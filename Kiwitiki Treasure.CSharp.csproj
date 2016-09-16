@@ -99,8 +99,10 @@
     <Compile Include="Assets\Scripts\Utility\Animation\AnimationObject.cs" />
     <Compile Include="Assets\Scripts\Utility\Constant.cs" />
     <Compile Include="Assets\Scripts\Utility\FloatingEffect.cs" />
+    <Compile Include="Assets\Scripts\Utility\Popup.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttribute.cs" />
     <Compile Include="Assets\Scripts\Utility\ReadOnlyAttributeDrawer.cs" />
+    <Compile Include="Assets\Scripts\Utility\ResetSave.cs" />
     <Compile Include="Assets\Scripts\Utility\ScrollSnapRect.cs" />
     <Compile Include="Assets\Scripts\Utility\Tiles.cs" />
   </ItemGroup>

@@ -153,4 +153,24 @@ public class PlayerConfig : ScriptableObject {
 	void Update () {
 	
 	}
+
+    public void ResetSave()
+    {
+        ActualWorld = 1;
+        foreach (WorldGameData worldData in WorldsList)
+        {
+            worldData.ActualLevel = 1;
+            worldData.AttemptsActual = 10;
+            worldData.StarBarPoints = 0;
+            worldData.AttemptsMaxAdder = 0;
+
+            worldData.IsUnlocked = (worldData.WorldId == 1) ? true : false;
+
+            foreach (CollectionItemData itemData in worldData.Collections)
+            {
+                itemData.IsNew = true;
+                itemData.Owned = false;
+            }
+        }
+    }
 }
