@@ -274,6 +274,7 @@ public class GameManager : MonoBehaviour {
         // Change le sprite de la tile
         tile.GetComponent<SpriteRenderer>().sprite = MapManager.instance.WinSprite;
         tile.GetComponent<SpriteRenderer>().color = MapManager.instance.SpriteColors[pointsMilestone - 1];
+        tile.transform.DOLocalMoveZ(1, 0);
 
         //Animation Chest appear
         ChestAppear(tile, pointsMilestone, true);
