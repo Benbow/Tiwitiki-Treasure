@@ -13,8 +13,17 @@ public class LocalManager : MonoBehaviour {
     public GameObject PlayButton;
     public Image WorldCompletionBar;
     public Text WorldCompletionText;
+    public TutoManager TutoObject;
+
+    public ParticleSystem NewIllusParticles;
+
+    [SerializeField]
+    private bool _isPopup;
+    [SerializeField]
+    private bool _isNew;
 
     public static LocalManager instance;
+
 
     private LocalManager() { }
 
@@ -30,6 +39,32 @@ public class LocalManager : MonoBehaviour {
         }
     }
 
+    public bool IsPopup
+    {
+        get
+        {
+            return _isPopup;
+        }
+
+        set
+        {
+            _isPopup = value;
+        }
+    }
+
+    public bool IsNew
+    {
+        get
+        {
+            return _isNew;
+        }
+
+        set
+        {
+            _isNew = value;
+        }
+    }
+
     void Awake()
     {
         instance = this;
@@ -41,7 +76,7 @@ public class LocalManager : MonoBehaviour {
         ScrollSnapReference.startingPage = GlobalManager.instance.PlayerConf.ActualWorld - 1;
         WorldNameReference.text = GlobalManager.instance.PlayerConf.GetActualWorldData().WorldName;
         UpdateWorldCompletion();
-        Charged();
+        Appear();
     }
 	
 	// Update is called once per frame
@@ -49,11 +84,66 @@ public class LocalManager : MonoBehaviour {
 	    
 	}
 
-    public void Charged()
+    public void Appear()
     {
         Ui.SetActive(true);
-        FrontScreen.DOFade(0, 2f).SetDelay(0.8f);
+        FrontScreen.DOFade(0, 2f).SetEase(Ease.InQuint).OnComplete(CheckStart);
+
     }
+
+    public void Disappear()
+    {
+        if(!GlobalManager.instance.PlayerConf.Tuto && !IsPopup && !IsNew)
+            FrontScreen.DOFade(1, 2f).SetEase(Ease.OutQuint).OnComplete(Play);
+    }
+
+    public void CheckStart()
+    {
+        CheckTuto();
+        //CheckNew();
+    }
+
+    public void CheckTuto()
+    {
+        if (GlobalManager.instance.PlayerConf.Tuto)
+        {
+            TutoObject.LaunchTuto();
+        }
+    }
+
+    /*public void CheckNew()
+    {
+        WorldGameData data = GlobalManager.instance.PlayerConf.GetActualWorldData();
+        for (int i = 0; i > -data.LayersCount; i--)
+        {
+            foreach (CollectionItemData item in data.Collections)
+            {
+                if (item.IsNew && item.Owned)
+                {
+                    foreach (ItemPlacementData placement in item.PlacementData)
+                    {
+                        if (i == placement.Position.z)
+                        {
+                            GameObject illus = Instantiate(NewIllusPrefab);
+                            illus.transform.SetParent(transform);
+                            Image illusImg = illus.GetComponent<Image>();
+                            illusImg.sprite = item.CollectionSprite;
+                            illusImg.preserveAspect = true;
+                            illusImg.SetNativeSize();
+
+                            RectTransform illusTransform = illus.GetComponent<RectTransform>();
+                            illusTransform.localPosition = placement.Position;
+                            illusTransform.sizeDelta = placement.Size;
+                            illusTransform.localScale = placement.Scaling;
+                            illus.name = item.Name;
+
+                            illus.AddComponent<NewItemAppear>();
+                        }
+                    }
+                }
+            }
+        }
+    }*/
 
     public void ChangeWorld(int worldId)
     {

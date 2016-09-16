@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour {
     private float _timerReplayDelay = 0;
     private GameObject _treasureChest;
     private bool _reachNewLevel;
+    public SpriteRenderer FrontScreen;
 
     public GameObject[,] GameMap
     {
@@ -158,14 +159,21 @@ public class GameManager : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start() {
-        DOTween.Init();
-
+    void Start()
+    {
         MyPlayerConfig = GlobalManager.instance.PlayerConf;
+        if (!MyPlayerConfig.Tuto)
+        {
+            // star bar points
+            UpdateAttempts();
+            UpdatePointsReward(); // points jauge rewards initilization
+            Appear();
+        }
+    }
 
-        // star bar points
-        UpdateAttempts();
-        UpdatePointsReward(); // points jauge rewards initilization
+    public void LaunchGame()
+    {
+        DOTween.Init();
         MapManager.instance.GenerateMap();
     }
 
@@ -228,7 +236,7 @@ public class GameManager : MonoBehaviour {
                     StartDelayedReplay(3);
                 else if (!_reachNewLevel && MyPlayerConfig.GetActualAttempts() <= 0)
                 {
-                    SceneManager.LoadScene(0);
+                    Disappear();
                     //Lose Attempts gesture
                 }
             }
@@ -302,7 +310,7 @@ public class GameManager : MonoBehaviour {
         levelStarAmount = LevelStarFormula();
 
         // if scores is bigger, manage level changing
-        if (MyPlayerConfig.GetActualScore() >= levelStarAmount)
+        if (MyPlayerConfig.GetActualScore() >= (int)levelStarAmount)
         {
             _reachNewLevel = true;
             ValuePointsText.text = (int)levelStarAmount + " / " + (int)levelStarAmount;
@@ -410,7 +418,7 @@ public class GameManager : MonoBehaviour {
     }
 
     //launch the game again after removing the popup
-    public void ContinueAftertPopupAnim()
+    public void ContinueAftertPopupAnim(bool newItem = false)
     {
         // Remove Popup
         NewIllusPopup.GetComponent<BoxCollider>().enabled = false;
@@ -420,7 +428,10 @@ public class GameManager : MonoBehaviour {
         Sequence collectPopup = DOTween.Sequence();
         collectPopup.Append(cardBack.transform.DOLocalMoveY(-24f, 0.5f).SetEase(Ease.InCubic));
         collectPopup.AppendInterval(0.3f);
-        collectPopup.Append(bg.DOFade(0, 0.3f).SetEase(Ease.InCirc)).OnComplete(() => AfterPopupReady(true));
+        if(!newItem)
+            collectPopup.Append(bg.DOFade(0, 0.3f).SetEase(Ease.InCirc)).OnComplete(() => AfterPopupReady(true));
+        else
+            collectPopup.Append(bg.DOFade(0, 0.3f).SetEase(Ease.InCirc)).OnComplete(Disappear);
         //collectPopup.AppendCallback(AfterPopupReady);
 
         collectPopup.Play();
@@ -445,5 +456,20 @@ public class GameManager : MonoBehaviour {
     {
         ResetTimerPoints();
         IsPlaying = true;
+    }
+
+    public void Appear()
+    {
+        FrontScreen.DOFade(0, 2f).SetEase(Ease.InQuint).OnComplete(LaunchGame);
+    }
+
+    public void Disappear()
+    {
+        FrontScreen.DOFade(1, 2f).SetEase(Ease.OutQuint).OnComplete(SwitchScene);
+    }
+
+    public void SwitchScene()
+    {
+        SceneManager.LoadScene(0);
     }
 }

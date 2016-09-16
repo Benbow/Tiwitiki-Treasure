@@ -94,24 +94,35 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
 
     //------------------------------------------------------------------------
     void Update() {
-        // if moving to target position
-        if (_lerp) {
-            // prevent overshooting with values greater than 1
-            float decelerate = Mathf.Min(decelerationRate * Time.deltaTime, 1f);
-            _container.anchoredPosition = Vector2.Lerp(_container.anchoredPosition, _lerpTo, decelerate);
-            // time to stop lerping?
-            if (Vector2.SqrMagnitude(_container.anchoredPosition - _lerpTo) < 0.25f) {
-                // snap to target and stop lerping
-                _container.anchoredPosition = _lerpTo;
-                _lerp = false;
-                // clear also any scrollrect move that may interfere with our lerping
-                _scrollRectComponent.velocity = Vector2.zero;
-            }
+        if (!GlobalManager.instance.PlayerConf.Tuto && !LocalManager.instance.IsPopup && !LocalManager.instance.IsNew)
+        {
+            _scrollRectComponent.horizontal = true;
+            // if moving to target position
+            if (_lerp)
+            {
+                // prevent overshooting with values greater than 1
+                float decelerate = Mathf.Min(decelerationRate * Time.deltaTime, 1f);
+                _container.anchoredPosition = Vector2.Lerp(_container.anchoredPosition, _lerpTo, decelerate);
+                // time to stop lerping?
+                if (Vector2.SqrMagnitude(_container.anchoredPosition - _lerpTo) < 0.25f)
+                {
+                    // snap to target and stop lerping
+                    _container.anchoredPosition = _lerpTo;
+                    _lerp = false;
+                    // clear also any scrollrect move that may interfere with our lerping
+                    _scrollRectComponent.velocity = Vector2.zero;
+                }
 
-            // switches selection icon exactly to correct page
-            if (_showPageSelection) {
-                SetPageSelection(GetNearestPage());
+                // switches selection icon exactly to correct page
+                if (_showPageSelection)
+                {
+                    SetPageSelection(GetNearestPage());
+                }
             }
+        }
+        else
+        {
+            _scrollRectComponent.horizontal = false;
         }
     }
 
@@ -295,22 +306,31 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     public void OnEndDrag(PointerEventData aEventData) {
         // how much was container's content dragged
         float difference;
-        if (_horizontal) {
+        if (_horizontal)
+        {
             difference = _startPosition.x - _container.anchoredPosition.x;
-        } else {
-            difference = - (_startPosition.y - _container.anchoredPosition.y);
+        }
+        else
+        {
+            difference = -(_startPosition.y - _container.anchoredPosition.y);
         }
 
         // test for fast swipe - swipe that moves only +/-1 item
         if (Time.unscaledTime - _timeStamp < fastSwipeThresholdTime &&
             Mathf.Abs(difference) > fastSwipeThresholdDistance &&
-            Mathf.Abs(difference) < _fastSwipeThresholdMaxLimit) {
-            if (difference > 0) {
+            Mathf.Abs(difference) < _fastSwipeThresholdMaxLimit)
+        {
+            if (difference > 0)
+            {
                 NextScreen();
-            } else {
+            }
+            else
+            {
                 PreviousScreen();
             }
-        } else {
+        }
+        else
+        {
             // if not fast time, look to which page we got to
             LerpToPage(GetNearestPage());
         }
@@ -319,17 +339,25 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
     }
 
     //------------------------------------------------------------------------
-    public void OnDrag(PointerEventData aEventData) {
-        if (!_dragging) {
-            // dragging started
-            _dragging = true;
-            // save time - unscaled so pausing with Time.scale should not affect it
-            _timeStamp = Time.unscaledTime;
-            // save current position of cointainer
-            _startPosition = _container.anchoredPosition;
-        } else {
-            if (_showPageSelection) {
-                SetPageSelection(GetNearestPage());
+    public void OnDrag(PointerEventData aEventData)
+    {
+        if (!GlobalManager.instance.PlayerConf.Tuto && !LocalManager.instance.IsPopup)
+        {
+            if (!_dragging)
+            {
+                // dragging started
+                _dragging = true;
+                // save time - unscaled so pausing with Time.scale should not affect it
+                _timeStamp = Time.unscaledTime;
+                // save current position of cointainer
+                _startPosition = _container.anchoredPosition;
+            }
+            else
+            {
+                if (_showPageSelection)
+                {
+                    SetPageSelection(GetNearestPage());
+                }
             }
         }
     }

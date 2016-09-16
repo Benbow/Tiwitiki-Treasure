@@ -46,6 +46,7 @@ public class NewCollecItem : MonoBehaviour
             ButtonText.text = "Continue";
             WorldGameData data = GameManager.instance.MyPlayerConfig.GetActualWorldData();
             data.AttemptsActual = data.AttemptsMaxAdder + data.MapConfig.maxAttemptsBase;
+            GameManager.instance.UpdateAttempts();
         }
         else
         {
@@ -67,7 +68,6 @@ public class NewCollecItem : MonoBehaviour
         {
             _selectedItem.Owned = true;
             GameManager.instance.AfterPopupReady(false);
-            SceneManager.LoadScene(0);
         }
 
         MyButton.image.DOFade(0f, 0.6f);
@@ -78,7 +78,7 @@ public class NewCollecItem : MonoBehaviour
     public void Activate()
     {
         _isCliked = false;
-        GameManager.instance.ContinueAftertPopupAnim();
+        GameManager.instance.ContinueAftertPopupAnim(_selectedItem.IsNew);
     }
 
 

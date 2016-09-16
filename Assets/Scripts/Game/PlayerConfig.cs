@@ -7,6 +7,8 @@ public class PlayerConfig : ScriptableObject {
     [SerializeField]
     private int _actualWorld;
     [SerializeField]
+    private bool _tuto;
+    [SerializeField]
     private List<WorldGameData> _worldsList;
 
     public int ActualWorld
@@ -32,6 +34,19 @@ public class PlayerConfig : ScriptableObject {
         set
         {
             _worldsList = value;
+        }
+    }
+
+    public bool Tuto
+    {
+        get
+        {
+            return _tuto;
+        }
+
+        set
+        {
+            _tuto = value;
         }
     }
 
@@ -157,6 +172,7 @@ public class PlayerConfig : ScriptableObject {
     public void ResetSave()
     {
         ActualWorld = 1;
+        Tuto = true;
         foreach (WorldGameData worldData in WorldsList)
         {
             worldData.ActualLevel = 1;

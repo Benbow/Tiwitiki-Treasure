@@ -63,9 +63,25 @@ public class WorldScreenManager : MonoBehaviour {
                                 illusTransform.sizeDelta = placement.Size;
                                 illusTransform.localScale = placement.Scaling;
                                 illus.name = item.Name;
+
+                                if (item.IsNew)
+                                {
+                                    illusImg.color = new Color(1, 1, 1, 0);
+                                    illus.AddComponent<NewItemAppear>();
+                                }
                             }
                         }
                     }
+                    
+                }
+            }
+            //uncheck isNew
+            foreach (CollectionItemData item in data.Collections)
+            {
+                if (item.IsNew && item.Owned)
+                {
+                    item.IsNew = false;
+                    LocalManager.instance.IsNew = true;
                 }
             }
         }

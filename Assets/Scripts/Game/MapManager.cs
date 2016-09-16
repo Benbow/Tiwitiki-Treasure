@@ -233,8 +233,8 @@ public class MapManager : MonoBehaviour {
         }
 
         //temporary move Camera
-        MapParent.transform.position = new Vector3(7, 5.3f, _mapConfig.MapSize.y*4);
-        MapParent.transform.localScale = new Vector3(0.7f, 0.7f, 1);
+        MapParent.transform.position = new Vector3(7, 5.1f, _mapConfig.MapSize.y*4);
+        MapParent.transform.localScale = new Vector3(0.65f, 0.65f, 1);
 
         GenerateSoluce();
         IntroMapAnimation();
@@ -302,8 +302,9 @@ public class MapManager : MonoBehaviour {
 
         Sequence introAnimation = DOTween.Sequence();
         introAnimation.AppendInterval(Constant._TimerFillStarBar);
-        introAnimation.Append(MapParent.transform.DOLocalMoveX(-4, 0.8f).SetEase(Ease.OutCubic));
+        
         introAnimation.Append(_soluceObject.transform.DOLocalMoveY(-2, 0.8f).SetEase(Ease.OutCubic));
+        introAnimation.Append(MapParent.transform.DOLocalMoveX(-3.65f, 0.8f).SetEase(Ease.OutCubic));
         introAnimation.AppendCallback(GameManager.instance.GamesReady);
 
         introAnimation.Play();

@@ -26,11 +26,15 @@ public class Popup : MonoBehaviour {
 
     public void Open()
     {
+        if(LocalManager.instance != null)
+            LocalManager.instance.IsPopup = true;
         transform.DOLocalMoveY(_popupOpenPosition.y, 1f).SetEase(Ease.OutBack);
         _open = true;
     }
     public void Close()
     {
+        if (LocalManager.instance != null)
+            LocalManager.instance.IsPopup = false;
         transform.DOLocalMoveY(_popupClosePosition.y, 1f).SetEase(Ease.InBack);
         _open = false;
     }
